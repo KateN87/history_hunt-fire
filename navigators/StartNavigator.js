@@ -1,4 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
@@ -7,18 +9,9 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import ProfileScreen from "../screens/ProfileScreen";
 import { Text } from "react-native";
+import { CreateScreen } from "../screens/CreateScreen";
 
 const Stack = createNativeStackNavigator();
-
-const screenOptions = {
-	headerTitle: (props) => <LogoTitle {...props} />,
-	headerShadowVisible: false,
-};
-
-const options = {
-	headerTitleAlign: "center",
-	headerTintColor: "purple",
-};
 
 export default StartNavigator = () => {
 	const { user, isAuthenticated } = useContext(AuthContext);
@@ -28,28 +21,57 @@ export default StartNavigator = () => {
 	}
 
 	return (
-		<Stack.Navigator screenOptions={screenOptions}>
+		<Stack.Navigator>
 			{!user ? (
 				<>
 					<Stack.Screen
 						name="Login"
 						component={LoginScreen}
 						options={{
+							headerTitle: (props) => <LogoTitle {...props} />,
+							headerShadowVisible: false,
 							headerTitleAlign: "center",
+							headerTintColor: "purple",
 						}}
 					/>
 					<Stack.Screen
 						name="Signup"
 						component={SignupScreen}
-						options={options}
+						options={{
+							headerTitle: (props) => <LogoTitle {...props} />,
+							headerShadowVisible: false,
+							headerTitleAlign: "center",
+							headerTintColor: "purple",
+						}}
 					/>
 				</>
 			) : (
-				<Stack.Screen
-					name="profile"
-					component={ProfileScreen}
-					options={{ headerShown: false }}
-				/>
+				<>
+					<Stack.Screen
+						name="profile"
+						component={ProfileScreen}
+						options={{ headerShown: false }}
+					/>
+					<Stack.Screen
+						name="create"
+						component={CreateScreen}
+						options={({ navigation }) => ({
+							headerShadowVisible: false,
+							headerTitle: "",
+							headerTintColor: "purple",
+							headerLeft: () => (
+								<View>
+									<Ionicons
+										name="arrow-back"
+										size={48}
+										color="purple"
+										onPress={() => navigation.goBack()}
+									/>
+								</View>
+							),
+						})}
+					/>
+				</>
 			)}
 		</Stack.Navigator>
 	);
