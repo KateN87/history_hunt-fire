@@ -1,4 +1,6 @@
-import { createContext, useReducer, useState } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthContext = createContext();
@@ -6,25 +8,21 @@ export const AuthContext = createContext();
 export const authReducer = (state, action) => {
 	switch (action.type) {
 		case "LOGIN":
-			AsyncStorage.setItem("appToken", action.payload.token);
-			console.log("displayName", action.payload.displayName);
+			/* AsyncStorage.setItem("appToken", action.payload.token);
+			console.log("displayName", action.payload.displayName); */
 
 			return {
 				...state,
-				token: action.payload.token,
-				user: action.payload.displayName,
+				user: action.payload,
 				isAuthenticated: true,
 			};
 		case "LOGOUT":
-			AsyncStorage.removeItem("appToken");
 			return {
 				...state,
 				user: null,
-				token: null,
-				isAuthenticated: false,
 			};
-		case "AUTH_IS_READY":
-			return { user: action.payload, authIsReady: true };
+		case "IS_AUTHENTICATED":
+			return { user: action.payload, isAuthenticated: true };
 		default:
 			return state;
 	}
@@ -32,10 +30,16 @@ export const authReducer = (state, action) => {
 
 export const AuthContextProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(authReducer, {
-		token: null,
 		user: null,
 		isAuthenticated: false,
 	});
+
+	useEffect(() => {
+		const unsub = onAuthStateChanged(auth, (user) => {
+			dispatch({ type: "IS_AUTHENTICATED", payload: user });
+			unsub();
+		});
+	}, []);
 
 	return (
 		<AuthContext.Provider value={{ ...state, dispatch }}>

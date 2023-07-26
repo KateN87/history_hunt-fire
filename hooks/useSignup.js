@@ -1,5 +1,7 @@
-import { useState, useEffect, useContext } from "react";
-import { authenticate, updateDisplayName } from "../util/https";
+import { useState, useContext } from "react";
+import { updateProfile } from "firebase/auth";
+import { auth } from "../firebase/config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { AuthContext } from "../context/AuthContext";
 
 export const useSignup = () => {
@@ -12,36 +14,17 @@ export const useSignup = () => {
 		setIsPending(true);
 
 		try {
-			const res = await authenticate("signUp", email, password);
-
-			//upload user thumbnail to folder thumbnails/ folder user-id/ filename
-			/* const uploadPath = `thumbnails/${res.user.uid}/${thumbnail.name}`;
-			const img = await projectStorage.ref(uploadPath).put(thumbnail);
-			const imgUrl = await img.ref.getDownloadURL(); */
-
-			// add display name to user
-			const newName = await updateDisplayName(
-				res.data.idToken,
-				displayName
+			const res = await createUserWithEmailAndPassword(
+				auth,
+				email,
+				password
 			);
-
-			dispatch({
-				type: "LOGIN",
-				payload: { token: res.data.idToken, displayName },
+			await updateProfile(auth.currentUser, {
+				displayName,
 			});
 
-			//create a user document - with the same id as the uid
-			/* await projectFirestore.collection("users").doc(res.user.uid).set({
-				online: true,
-				displayName,
-				photoURL: imgUrl,
-			}); */
-
-			// dispatch login action
-			/* dispatch({ type: "LOGIN", payload: res.user }); */
-
+			dispatch({ type: "LOGIN", payload: res.user });
 			setIsPending(false);
-			setError(null);
 		} catch (err) {
 			setError(err.message);
 			setIsPending(false);

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, Modal, Pressable } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import { GlobalColors, GlobalStyles } from "../styles/global";
@@ -6,14 +6,30 @@ import CustomButton from "../components/CustomButton";
 import { PhotoPicker } from "../components/PhotoPicker";
 import IconButton from "../components/IconButton";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useLogout } from "../hooks/useLogout";
+import { updateProfile } from "firebase/auth";
+import { auth } from "../firebase/config";
 
 export default ProfileScreen = () => {
-	const { user, dispatch } = useContext(AuthContext);
+	const { user } = useContext(AuthContext);
+	const { logout } = useLogout();
 	const [modalVisible, setModalVisible] = useState(false);
+	const [imgUrl, setImgUrl] = useState();
 
 	const handleSubmit = () => {
-		dispatch({ type: "LOGOUT" });
+		logout();
 	};
+
+	useEffect(() => {
+		if (imgUrl) {
+			const updateImage = async () => {
+				await updateProfile(auth.currentUser, {
+					photoURL: imgUrl,
+				});
+			};
+			updateImage();
+		}
+	});
 
 	return (
 		<View style={styles.container}>
@@ -27,8 +43,9 @@ export default ProfileScreen = () => {
 						pressHandler={() => setModalVisible(true)}
 					/>
 				</View>
-				<Image source={user.image} style={styles.image} />
-				<Text style={GlobalStyles.largeTitle}>{user}</Text>
+
+				<Image source={{ uri: user.photoURL }} style={styles.image} />
+				<Text style={GlobalStyles.largeTitle}>{user.displayName}</Text>
 			</View>
 			<View>
 				<Text style={[GlobalStyles.mediumTitle, styles.pinkText]}>
@@ -47,7 +64,7 @@ export default ProfileScreen = () => {
 					>
 						<Text style={styles.closeText}>X</Text>
 					</Pressable>
-					<PhotoPicker />
+					<PhotoPicker setImgUrl={setImgUrl} />
 				</View>
 			</Modal>
 

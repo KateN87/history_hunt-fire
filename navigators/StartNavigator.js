@@ -1,13 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { checkloggedin } from "../util/https";
 
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
 import LogoTitle from "../components/LogoTitle";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import ProfileScreen from "../screens/ProfileScreen";
+import { Text } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,32 +21,11 @@ const options = {
 };
 
 export default StartNavigator = () => {
-	const { user, dispatch } = useContext(AuthContext);
+	const { user, isAuthenticated } = useContext(AuthContext);
 
-	useEffect(() => {
-		const fetchToken = async () => {
-			const token = await AsyncStorage.getItem("appToken");
-			if (token) {
-				const loggedInUser = await checkloggedin(token);
-
-				if (!loggedInUser.users) {
-					return;
-				}
-				console.log("loggedinuser", loggedInUser);
-				const displayName = loggedInUser.users.map((item) =>
-					item["providerUserInfo"].map((t) => t["displayName"])
-				);
-				dispatch({
-					type: "LOGIN",
-					payload: {
-						token,
-						displayName,
-					},
-				});
-			}
-		};
-		fetchToken();
-	}, [dispatch]);
+	if (!isAuthenticated) {
+		return <Text>Loading...</Text>;
+	}
 
 	return (
 		<Stack.Navigator screenOptions={screenOptions}>

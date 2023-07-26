@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
-import { authenticate } from "../util/https";
+import { auth } from "../firebase/config";
 import { AuthContext } from "../context/AuthContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export const useLogin = () => {
-	const [isCancelled, setIsCancelled] = useState(false);
 	const [error, setError] = useState(null);
 	const [isPending, setIsPending] = useState(false);
 	const { dispatch } = useContext(AuthContext);
@@ -14,20 +14,8 @@ export const useLogin = () => {
 
 		try {
 			// login
-			const res = await authenticate(
-				"signInWithPassword",
-				email,
-				password
-			);
-
-			// dispatch login action
-			dispatch({
-				type: "LOGIN",
-				payload: {
-					token: res.data.idToken,
-					displayName: res.data.displayName,
-				},
-			});
+			const res = await signInWithEmailAndPassword(auth, email, password);
+			dispatch({ type: "LOGIN", payload: res.user });
 
 			setIsPending(false);
 			setError(null);

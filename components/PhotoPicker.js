@@ -8,21 +8,26 @@ import {
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import * as ImagePicker from "expo-image-picker";
+/* import * as ImagePicker from "expo-image-picker"; */
 
 import { useContext, useEffect, useRef, useState } from "react";
 import IconButton from "./IconButton";
 import { GlobalColors } from "../styles/global";
-import { updatePhotoURL } from "../util/https";
 import { AuthContext } from "../context/AuthContext";
+import { storage } from "../firebase/config";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
-export const PhotoPicker = () => {
-	const { token } = useContext(AuthContext);
+export const PhotoPicker = ({ setImgUrl }) => {
+	const { user } = useContext(AuthContext);
+	const filename = user.uid;
+	const storageRef = ref(storage, `profilephotos/${filename}`);
+
 	const cameraRef = useRef();
 	const [type, setType] = useState(CameraType.back);
 	const [hasCameraPermissions, setHasCameraPermissions] = useState();
 	const [hasMediaLibraryPermissions, setHasMediaLibraryPermissions] =
 		useState();
+
 	const [photo, setPhoto] = useState();
 
 	//To check permissions
@@ -48,7 +53,7 @@ export const PhotoPicker = () => {
 	const takePic = async () => {
 		let options = {
 			quality: 1,
-			/* 			base64: true, */
+			base64: true,
 			exif: false,
 		};
 
@@ -59,8 +64,21 @@ export const PhotoPicker = () => {
 	if (photo) {
 		let savePhoto = async () => {
 			await MediaLibrary.saveToLibraryAsync(photo.uri);
-			const newPhoto = await updatePhotoURL(token, photo.uri);
-			console.log(newPhoto);
+
+			// Convert the file URI to base64
+			const response = await fetch(photo.uri);
+			const blob = await response.blob();
+
+			// Upload the image Blob to Firebase Storage
+			const uploadTask = uploadBytes(storageRef, blob);
+
+			// Wait for the upload to complete
+			await uploadTask;
+
+			// Get the download URL of the uploaded image
+			const image = await getDownloadURL(storageRef);
+			setImgUrl(image);
+
 			setPhoto(undefined);
 		};
 
@@ -75,21 +93,25 @@ export const PhotoPicker = () => {
 		);
 	}
 
-	const pickImage = async () => {
+	/* 	const pickImage = async () => {
 		// No permissions request is necessary for launching the image library
 		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.All,
-			allowsEditing: true,
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsEditing: false,
 			aspect: [4, 3],
 			quality: 1,
+			allowsMultipleSelection: false,
 		});
 
 		console.log(result);
 
 		if (!result.canceled) {
-			setImage(result.assets[0].uri);
+			setPhoto(result.assets[0].uri);
 		}
-	};
+		if (result.canceled) {
+			console.log("canceled");
+		}
+	}; */
 
 	if (hasCameraPermissions === undefined) {
 		return <Text>Requesting permissions...</Text>;
@@ -119,13 +141,13 @@ export const PhotoPicker = () => {
 					size={64}
 					pressHandler={toggleCameraType}
 				/>
-				<IconButton
+				{/* <IconButton
 					type={"Foundation"}
 					icon="photo"
 					color={GlobalColors.accentYellow}
 					size={64}
 					pressHandler={pickImage}
-				/>
+				/> */}
 			</View>
 		</Camera>
 	);
