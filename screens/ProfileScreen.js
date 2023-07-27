@@ -75,13 +75,14 @@ export default ProfileScreen = () => {
 				onRequestClose={() => setModalVisible(false)}
 			>
 				<View style={styles.modalView}>
-					<Pressable
-						style={[styles.button, styles.buttonClose]}
-						onPress={() => setModalVisible(!modalVisible)}
-					>
+					<Pressable onPress={() => setModalVisible(!modalVisible)}>
 						<Text style={styles.closeText}>X</Text>
 					</Pressable>
-					<PhotoPicker setImgUrl={setImgUrl} />
+					<PhotoPicker
+						filename={user.uid}
+						bucketname={"profilephotos"}
+						setImgUrl={setImgUrl}
+					/>
 				</View>
 			</Modal>
 			<View style={styles.innerContainer}>

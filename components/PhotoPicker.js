@@ -17,10 +17,8 @@ import { AuthContext } from "../context/AuthContext";
 import { storage } from "../firebase/config";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
-export const PhotoPicker = ({ setImgUrl }) => {
-	const { user } = useContext(AuthContext);
-	const filename = user.uid;
-	const storageRef = ref(storage, `profilephotos/${filename}`);
+export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
+	const storageRef = ref(storage, `${bucketname}/${filename}`);
 
 	const cameraRef = useRef();
 	const [type, setType] = useState(CameraType.back);
