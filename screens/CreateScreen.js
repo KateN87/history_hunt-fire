@@ -17,15 +17,16 @@ import { AuthContext } from "../context/AuthContext";
 //components
 import IconButton from "../components/IconButton";
 import { PhotoPicker } from "../components/PhotoPicker";
+import { CustomModal } from "../components/CustomModal";
 
 //styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import { useNavigation } from "@react-navigation/native";
+import { FindFriends } from "../components/FindFriends";
 
 export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
 	const [modalVisible, setModalVisible] = useState(false);
-	const [imgUrl, setImgUrl] = useState();
 	const navigation = useNavigation();
 
 	const {
@@ -41,11 +42,19 @@ export const CreateScreen = () => {
 	});
 
 	const onSubmit = async ({ title, time }) => {
+		const createdBy = {
+			displayName: user.displayName,
+			photoURL: user.photoURL,
+			id: user.uid,
+		};
+
 		const ref = collection(db, "hunts");
 		const createdHunt = await addDoc(ref, {
 			title,
 			time,
+			createdBy,
 		});
+
 		console.log("CREATED", createdHunt);
 		reset();
 		navigation.navigate("profile");
@@ -66,7 +75,7 @@ export const CreateScreen = () => {
 							rules={{
 								required: {
 									value: true,
-									message: "You neeed to name the hunt",
+									message: "You need to name the hunt",
 								},
 							}}
 							render={({ field: { onChange, value } }) => (
@@ -105,39 +114,20 @@ export const CreateScreen = () => {
 							)}
 						/>
 					</View>
-					{/* 					<View style={styles.inputContainer}>
-						<Text style={GlobalStyles.mediumTitle}>
-							Take a profile photo for your hunt!
-						</Text>
-
-						<IconButton
-							type={"FontAwesome5"}
-							icon="camera"
-							color={GlobalColors.hotPurple}
-							size={64}
-							pressHandler={() => setModalVisible(true)}
-						/>
-					</View> */}
-					{/* 					{error && (
-						<View style={GlobalStyles.errorContainer}>
-							<Text style={GlobalStyles.errorText}>{error}</Text>
-						</View>
-					)}
-
-					{!isPending && (
-						<CustomButton
-							title="Log in"
-							pressHandler={handleSubmit(onSubmit)}
-						/>
-					)} */}
 
 					{/* {isPending && ( */}
 					<CustomButton
-						title="Continue!"
-						pressHandler={handleSubmit(onSubmit)}
+						title="Next!"
+						pressHandler={() => setModalVisible(true)}
 						/* disabled={true} */
 					/>
 					{/* )}  */}
+					<CustomModal
+						modalVisible={modalVisible}
+						setModalVisible={setModalVisible}
+					>
+						<FindFriends />
+					</CustomModal>
 				</View>
 			</ScrollView>
 		</View>
@@ -160,3 +150,34 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 });
+
+/* const { user } = useContext(AuthContext);
+const [modalVisible, setModalVisible] = useState(false);
+const [imgUrl, setImgUrl] = useState(); */
+
+/* 					<View style={styles.inputContainer}>
+						<Text style={GlobalStyles.mediumTitle}>
+							Take a profile photo for your hunt!
+						</Text>
+
+						<IconButton
+							type={"FontAwesome5"}
+							icon="camera"
+							color={GlobalColors.hotPurple}
+							size={64}
+							pressHandler={() => setModalVisible(true)}
+						/>
+					</View> */
+
+/* 					{error && (
+						<View style={GlobalStyles.errorContainer}>
+							<Text style={GlobalStyles.errorText}>{error}</Text>
+						</View>
+					)}
+
+					{!isPending && (
+						<CustomButton
+							title="Log in"
+							pressHandler={handleSubmit(onSubmit)}
+						/>
+					)} */

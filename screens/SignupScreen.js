@@ -113,6 +113,7 @@ export default LoginScreen = () => {
 							<Text style={GlobalStyles.errorText}>{error}</Text>
 						</View>
 					)}
+
 					{!isPending && (
 						<CustomButton
 							title="CONTINUE"

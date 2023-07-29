@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, Modal, Pressable } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 
 //ctx & hooks
 import { AuthContext } from "../context/AuthContext";
@@ -10,6 +10,7 @@ import CustomButton from "../components/CustomButton";
 import { PhotoPicker } from "../components/PhotoPicker";
 import IconButton from "../components/IconButton";
 import { HuntsContainer } from "../components/HuntsContainer";
+import { CustomModal } from "../components/CustomModal";
 
 //styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
@@ -69,22 +70,17 @@ export default ProfileScreen = () => {
 			<View>
 				<HuntsContainer title="Planned Hunts" />
 			</View>
-			<Modal
-				animationType="slide"
-				visible={modalVisible}
-				onRequestClose={() => setModalVisible(false)}
+			<CustomModal
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
 			>
-				<View style={styles.modalView}>
-					<Pressable onPress={() => setModalVisible(!modalVisible)}>
-						<Text style={styles.closeText}>X</Text>
-					</Pressable>
-					<PhotoPicker
-						filename={user.uid}
-						bucketname={"profilephotos"}
-						setImgUrl={setImgUrl}
-					/>
-				</View>
-			</Modal>
+				<PhotoPicker
+					filename={user.uid}
+					bucketname={"profilephotos"}
+					setImgUrl={setImgUrl}
+				/>
+			</CustomModal>
+
 			<View style={styles.innerContainer}>
 				<CustomButton
 					title="Create Hunt"
@@ -115,15 +111,6 @@ const styles = StyleSheet.create({
 		top: 90,
 		right: 125,
 		zIndex: 5,
-	},
-	closeText: {
-		fontSize: 32,
-		fontWeight: "bold",
-		marginLeft: 10,
-		color: GlobalColors.accentYellow,
-	},
-	modalView: {
-		flex: 1,
 	},
 	logoutBtn: {
 		alignSelf: "flex-end",

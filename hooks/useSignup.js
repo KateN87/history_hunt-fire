@@ -3,6 +3,8 @@ import { updateProfile } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { AuthContext } from "../context/AuthContext";
+import { db } from "../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
 
 export const useSignup = () => {
 	const { dispatch } = useContext(AuthContext);
@@ -21,6 +23,12 @@ export const useSignup = () => {
 			);
 			await updateProfile(auth.currentUser, {
 				displayName,
+			});
+
+			const ref = collection(db, "users");
+			await addDoc(ref, {
+				displayName,
+				userId: res.user.uid,
 			});
 
 			dispatch({ type: "LOGIN", payload: res.user });
