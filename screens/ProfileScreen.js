@@ -38,6 +38,7 @@ export default ProfileScreen = () => {
 					photoURL: imgUrl,
 				});
 			};
+			console.log("IMAGEURL", imgUrl);
 			updateImage();
 		}
 	});

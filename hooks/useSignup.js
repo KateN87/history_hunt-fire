@@ -31,6 +31,11 @@ export const useSignup = () => {
 				userId: res.user.uid,
 			});
 
+			await updateProfile(auth.currentUser, {
+				photoURL:
+					"https://firebasestorage.googleapis.com/v0/b/historyhunt-a8c4b.appspot.com/o/profilephotos%2FAnonymousProfilePic.png?alt=media&token=18bd054d-bdcb-4e89-ad20-b53c9e832a25",
+			});
+
 			dispatch({ type: "LOGIN", payload: res.user });
 			setIsPending(false);
 		} catch (err) {
