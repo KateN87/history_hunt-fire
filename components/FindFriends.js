@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { auth } from "../firebase/config";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { SafeAreaView } from "react-native";
