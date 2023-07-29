@@ -10,6 +10,7 @@ import { AuthContext } from "../context/AuthContext";
 import ProfileScreen from "../screens/ProfileScreen";
 import { Text } from "react-native";
 import { CreateScreen } from "../screens/CreateScreen";
+import { FindFriends } from "../components/FindFriends";
 
 const Stack = createNativeStackNavigator();
 

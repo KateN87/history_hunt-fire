@@ -1,12 +1,5 @@
 import { useContext, useState } from "react";
-import {
-	View,
-	Text,
-	StyleSheet,
-	ScrollView,
-	Modal,
-	Pressable,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -15,8 +8,6 @@ import { db } from "../firebase/config";
 import { AuthContext } from "../context/AuthContext";
 
 //components
-import IconButton from "../components/IconButton";
-import { PhotoPicker } from "../components/PhotoPicker";
 import { CustomModal } from "../components/CustomModal";
 
 //styles
@@ -28,6 +19,7 @@ export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
 	const [modalVisible, setModalVisible] = useState(false);
 	const navigation = useNavigation();
+	const [selectedFriends, setSelectedFriends] = useState([]);
 
 	const {
 		control,
@@ -114,20 +106,26 @@ export const CreateScreen = () => {
 							)}
 						/>
 					</View>
-
-					{/* {isPending && ( */}
-					<CustomButton
-						title="Next!"
-						pressHandler={() => setModalVisible(true)}
-						/* disabled={true} */
-					/>
-					{/* )}  */}
-					<CustomModal
-						modalVisible={modalVisible}
-						setModalVisible={setModalVisible}
-					>
-						<FindFriends />
-					</CustomModal>
+					<View style={styles.inputContainer}>
+						<Text style={GlobalStyles.mediumTitle}>
+							Invite some friends to go hunting with!
+						</Text>
+						<CustomButton
+							title="CONTINUE"
+							pressHandler={() => {
+								setModalVisible(true);
+							}}
+						/>
+						<CustomModal
+							modalVisible={modalVisible}
+							setModalVisible={setModalVisible}
+						>
+							<FindFriends
+								selected={selectedFriends}
+								setSelected={setSelectedFriends}
+							/>
+						</CustomModal>
+					</View>
 				</View>
 			</ScrollView>
 		</View>
@@ -142,6 +140,8 @@ const styles = StyleSheet.create({
 	},
 	innerContainer: {
 		flex: 1,
+		marginTop: 20,
+		marginHorizontal: 10,
 	},
 	inputContainer: {
 		marginTop: 20,
@@ -150,34 +150,3 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 });
-
-/* const { user } = useContext(AuthContext);
-const [modalVisible, setModalVisible] = useState(false);
-const [imgUrl, setImgUrl] = useState(); */
-
-/* 					<View style={styles.inputContainer}>
-						<Text style={GlobalStyles.mediumTitle}>
-							Take a profile photo for your hunt!
-						</Text>
-
-						<IconButton
-							type={"FontAwesome5"}
-							icon="camera"
-							color={GlobalColors.hotPurple}
-							size={64}
-							pressHandler={() => setModalVisible(true)}
-						/>
-					</View> */
-
-/* 					{error && (
-						<View style={GlobalStyles.errorContainer}>
-							<Text style={GlobalStyles.errorText}>{error}</Text>
-						</View>
-					)}
-
-					{!isPending && (
-						<CustomButton
-							title="Log in"
-							pressHandler={handleSubmit(onSubmit)}
-						/>
-					)} */
