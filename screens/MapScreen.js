@@ -8,6 +8,7 @@ import { GlobalColors } from "../styles/global";
 export const MapScreen = ({ navigation }) => {
 	const [pickedLocation, setPickedLocation] = useState([]);
 	const [initialRegion, setInitialRegion] = useState();
+	console.log(pickedLocation);
 
 	useEffect(() => {
 		const getLocation = async () => {
@@ -19,6 +20,7 @@ export const MapScreen = ({ navigation }) => {
 				longitudeDelta: 0.0421,
 			});
 		};
+
 		getLocation();
 	}, []);
 
@@ -27,7 +29,7 @@ export const MapScreen = ({ navigation }) => {
 			Alert.alert("No location selected", "You have to pick a location");
 			return;
 		}
-		navigation.navigate("create", pickedLocation);
+		navigation.navigate("create", { locations: pickedLocation });
 	}, [navigation, pickedLocation]);
 
 	useLayoutEffect(() => {
@@ -75,7 +77,7 @@ export const MapScreen = ({ navigation }) => {
 							/>
 						))}
 
-					{pickedLocation.length > 1 && (
+					{pickedLocation.length > 0 && (
 						<Polyline
 							coordinates={pickedLocation.map((loc) => ({
 								latitude: loc.latitude,

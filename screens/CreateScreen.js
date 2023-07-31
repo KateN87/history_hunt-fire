@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 //firebase & ctxt
 import { db } from "../firebase/config";
@@ -9,12 +10,12 @@ import { AuthContext } from "../context/AuthContext";
 
 //components
 import { CustomModal } from "../components/CustomModal";
+import { FindFriendsScreen } from "./FindFriendsScreen";
+import { LocationPicker } from "../components/LocationPicker";
 
 //styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { FindFriends } from "../components/FindFriends";
-import { LocationPicker } from "../components/LocationPicker";
+import CustomButton from "../components/CustomButton";
 
 export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
@@ -23,6 +24,7 @@ export const CreateScreen = () => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedFriends, setSelectedFriends] = useState([]);
 	const [pickedLocation, setPickedLocation] = useState();
+	const [friendList, setFriendList] = useState([]);
 
 	const {
 		control,
@@ -38,11 +40,37 @@ export const CreateScreen = () => {
 
 	useEffect(() => {
 		if (route.params) {
-			setPickedLocation(route.params);
+			if (route.params.locations) {
+				setPickedLocation(route.params.locations);
+			} else if (route.params.friends) {
+				setSelectedFriends(route.params.friends);
+
+				const getFriendNames = async () => {
+					const updatedList = await Promise.all(
+						route.params.friends.map(async (friend) => {
+							const q = query(
+								collection(db, "users"),
+								where("userId", "==", friend)
+							);
+							const querySnapshot = await getDocs(q);
+							const friendData = querySnapshot.docs.map((doc) =>
+								doc.data()
+							);
+							return {
+								userId: friend,
+								displayName: friendData[0].displayName,
+							};
+						})
+					);
+					setFriendList(updatedList);
+				};
+				getFriendNames();
+			}
 		}
 	}, [route]);
-	const navigationHandler = () => {
-		navigation.navigate("locate");
+
+	const navigationHandler = (location, prop) => {
+		navigation.navigate(location, prop);
 	};
 
 	const onSubmit = async ({ title, time }) => {
@@ -125,6 +153,26 @@ export const CreateScreen = () => {
 							setPickedLocation={setPickedLocation}
 						/>
 					</View>
+					<View style={styles.inputContainer}>
+						<Text style={GlobalStyles.mediumTitle}>
+							Who are going hunting?
+						</Text>
+						{friendList.length === 0 && (
+							<Text style={GlobalStyles.smallTitle}>
+								No friends added yet
+							</Text>
+						)}
+						{friendList.length > 0 &&
+							friendList.map((friend) => (
+								<Text>{friend.displayName}</Text>
+							))}
+						<CustomButton
+							title="Find friends"
+							pressHandler={() =>
+								navigationHandler("findfriends")
+							}
+						/>
+					</View>
 				</View>
 			</ScrollView>
 		</View>
@@ -136,6 +184,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: "white",
 		alignItems: "center",
+		paddingBottom: 20,
 	},
 	innerContainer: {
 		flex: 1,

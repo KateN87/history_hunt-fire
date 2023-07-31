@@ -1,17 +1,19 @@
+import { useContext } from "react";
+import { View, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+//ctx
+import { AuthContext } from "../context/AuthContext";
+
+//Screens & components
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
-import LogoTitle from "../components/LogoTitle";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
 import ProfileScreen from "../screens/ProfileScreen";
-import { Text } from "react-native";
 import { MapScreen } from "../screens/MapScreen";
 import { CreateScreen } from "../screens/CreateScreen";
-import { LocationPickerScreen } from "../components/LocationPicker";
+import { FindFriendsScreen } from "../screens/FindFriendsScreen";
+import LogoTitle from "../components/LogoTitle";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,6 +81,25 @@ export default StartNavigator = () => {
 						options={({ navigation }) => ({
 							headerShadowVisible: false,
 							headerTitle: "Select places",
+							headerTintColor: "purple",
+							headerLeft: () => (
+								<View>
+									<Ionicons
+										name="arrow-back"
+										size={48}
+										color="purple"
+										onPress={() => navigation.goBack()}
+									/>
+								</View>
+							),
+						})}
+					/>
+					<Stack.Screen
+						name="findfriends"
+						component={FindFriendsScreen}
+						options={({ navigation }) => ({
+							headerShadowVisible: false,
+							headerTitle: "Find Friends",
 							headerTintColor: "purple",
 							headerLeft: () => (
 								<View>

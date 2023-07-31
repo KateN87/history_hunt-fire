@@ -49,7 +49,11 @@ export const LocationPicker = ({ pickedLocation, setPickedLocation }) => {
 						style={styles.map}
 					/>
 				)}
-				{!pickedLocation && <Text>No picked location yet</Text>}
+				{!pickedLocation && (
+					<Text style={GlobalStyles.smallTitle}>
+						No picked locations yet
+					</Text>
+				)}
 			</View>
 			<View>
 				<CustomButton

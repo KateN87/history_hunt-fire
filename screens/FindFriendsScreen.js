@@ -1,17 +1,44 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { SafeAreaView } from "react-native";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import { GlobalColors, GlobalStyles } from "../styles/global";
+import IconButton from "../components/IconButton";
+import { Alert } from "react-native";
 
-export const FindFriends = ({ selected, setSelected }) => {
+export const FindFriendsScreen = ({ navigation }) => {
 	const [documents, setDocuments] = useState(null);
+	const [selectedFriends, setSelectedFriends] = useState([]);
 
+	const saveSelectedFriends = useCallback(() => {
+		if (selectedFriends.length <= 0) {
+			Alert.alert(
+				"No friends selected",
+				"You have to add at least one friend"
+			);
+			return;
+		}
+		navigation.navigate("create", { friends: selectedFriends });
+	}, [navigation, selectedFriends]);
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerRight: ({ tintColor }) => (
+				<IconButton
+					type="FontAwesome5"
+					icon="save"
+					size={38}
+					color={tintColor}
+					pressHandler={saveSelectedFriends}
+				/>
+			),
+		});
+	}, [navigation, saveSelectedFriends]);
 	//real time data collection
 	useEffect(() => {
-		setSelected([]);
+		setSelectedFriends([]);
 		//1st arg: database we want to connect to, 2nd arg: name of the colleciton
 
 		let ref = collection(db, "users");
@@ -27,7 +54,6 @@ export const FindFriends = ({ selected, setSelected }) => {
 				};
 				results.push(modifiedData);
 			});
-			console.log(results);
 			setDocuments(results);
 		});
 
@@ -43,16 +69,20 @@ export const FindFriends = ({ selected, setSelected }) => {
 			<View style={{ padding: 20 }}>
 				<Text style={GlobalStyles.largeTitle}>Add some friends!</Text>
 				<MultipleSelectList
-					setSelected={(val) => setSelected(val)}
+					setSelected={(val, key) => setSelectedFriends(val)}
 					data={documents}
 					label="Added friends"
-					onSelect={() => console.log(selected)}
+					onSelect={() => console.log("SELECTED", selectedFriends)}
 					fontFamily="nunito-bold"
-					fontSize={{ fontSize: 26 }}
+					inputStyles={{ fontSize: 20 }}
+					dropdownTextStyles={{ fontSize: 20 }}
 					notFoundText="No users found :("
 					labelStyles={GlobalStyles.mediumTitle}
 					badgeStyles={styles.badge}
 					badgeTextStyles={{ fontSize: 20 }}
+					placeholder="Select friends"
+					boxStyles={{ borderColor: GlobalColors.softPurple }}
+					dropdownStyles={{ borderColor: GlobalColors.softPurple }}
 				/>
 			</View>
 		</SafeAreaView>
@@ -61,7 +91,7 @@ export const FindFriends = ({ selected, setSelected }) => {
 
 const styles = StyleSheet.create({
 	badge: {
-		backgroundColor: GlobalColors.hotPurple,
+		backgroundColor: GlobalColors.softPurple,
 		fontSize: 4,
 	},
 });

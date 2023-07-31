@@ -17,12 +17,17 @@ export const GlobalStyles = {
 	largeTitle: {
 		fontSize: 40,
 		fontFamily: "nunito-bold",
-		color: GlobalColors.hotPurple,
+		color: GlobalColors.softPurple,
 	},
 	mediumTitle: {
 		fontSize: 22,
 		fontFamily: "nunito-bold",
 		color: GlobalColors.softPink,
+	},
+	smallTitle: {
+		fontSize: 18,
+		fontFamily: "nunito-bold",
+		color: GlobalColors.softPurple,
 	},
 	errorContainer: {
 		borderWidth: 2,
