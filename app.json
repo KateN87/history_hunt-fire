@@ -26,11 +26,23 @@
 		},
 		"plugins": [
 			[
+				"expo-camera",
+				{
+					"cameraPermission": "You need to grant permission to access your camera"
+				}
+			],
+			[
 				"expo-media-library",
 				{
 					"photosPermission": "Allow this app to access your photos",
 					"savePhotosPermission": "Allow this app to save photos",
 					"isAccessMediaLocationEnabled": true
+				}
+			],
+			[
+				"expo-location",
+				{
+					"locationAlwaysAndWhenInUsePermission": "Allow this app to use your location."
 				}
 			]
 		]

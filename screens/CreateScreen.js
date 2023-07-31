@@ -14,6 +14,7 @@ import { CustomModal } from "../components/CustomModal";
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import { useNavigation } from "@react-navigation/native";
 import { FindFriends } from "../components/FindFriends";
+import { LocationPicker } from "../components/LocationPicker";
 
 export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
@@ -106,6 +107,7 @@ export const CreateScreen = () => {
 							)}
 						/>
 					</View>
+
 					<View style={styles.inputContainer}>
 						<Text style={GlobalStyles.mediumTitle}>
 							Invite some friends to go hunting with!
@@ -120,10 +122,11 @@ export const CreateScreen = () => {
 							modalVisible={modalVisible}
 							setModalVisible={setModalVisible}
 						>
-							<FindFriends
+							<LocationPicker />
+							{/* <FindFriends
 								selected={selectedFriends}
 								setSelected={setSelectedFriends}
-							/>
+							/> */}
 						</CustomModal>
 					</View>
 				</View>
