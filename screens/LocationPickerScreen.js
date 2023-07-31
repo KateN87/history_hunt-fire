@@ -1,15 +1,23 @@
-import { Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, View, StyleSheet, Image } from "react-native";
 import * as Location from "expo-location";
 
-import CustomButton from "./CustomButton";
-import { useEffect, useState } from "react";
+import CustomButton from "../components/CustomButton";
 import { createLocationUrl } from "../util/location";
-import { StyleSheet, Image } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
-export const LocationPicker = () => {
+export const LocationPickerScreen = () => {
 	const [hasLocatePermissions, setHasLocatePermissions] =
 		Location.useForegroundPermissions();
 	const [pickedLocation, setPickedLocation] = useState();
+	const route = useRoute();
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		if (route.params) {
+			setPickedLocation(route.params);
+		}
+	}, [route]);
 
 	//To check permissions
 	useEffect(() => {
@@ -20,16 +28,9 @@ export const LocationPicker = () => {
 		})();
 	}, []);
 
-	const getLocationHandler = async () => {
-		const location = await Location.getCurrentPositionAsync();
-		setPickedLocation({
-			lat: location.coords.latitude,
-			lng: location.coords.longitude,
-		});
-		console.log("PICKED", pickedLocation);
+	const pickOnMapHandler = () => {
+		navigation.navigate("map");
 	};
-
-	const pickOnMapHandler = () => {};
 
 	if (hasLocatePermissions === undefined) {
 		return <Text>Requesting permissions...</Text>;
@@ -51,13 +52,9 @@ export const LocationPicker = () => {
 						style={styles.map}
 					/>
 				)}
-				{!pickedLocation && <Text>No picked lcoation yet</Text>}
+				{!pickedLocation && <Text>No picked location yet</Text>}
 			</View>
 			<View>
-				<CustomButton
-					title="Locate user"
-					pressHandler={getLocationHandler}
-				/>
 				<CustomButton
 					title="Pick on map"
 					pressHandler={pickOnMapHandler}

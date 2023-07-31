@@ -14,12 +14,12 @@ import { CustomModal } from "../components/CustomModal";
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import { useNavigation } from "@react-navigation/native";
 import { FindFriends } from "../components/FindFriends";
-import { LocationPicker } from "../components/LocationPicker";
+import { LocationPicker } from "./LocationPickerScreen";
 
 export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
-	const [modalVisible, setModalVisible] = useState(false);
 	const navigation = useNavigation();
+	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedFriends, setSelectedFriends] = useState([]);
 
 	const {
@@ -33,6 +33,9 @@ export const CreateScreen = () => {
 			password: "",
 		},
 	});
+	const navigationHandler = () => {
+		navigation.navigate("locate");
+	};
 
 	const onSubmit = async ({ title, time }) => {
 		const createdBy = {
@@ -108,27 +111,10 @@ export const CreateScreen = () => {
 						/>
 					</View>
 
-					<View style={styles.inputContainer}>
-						<Text style={GlobalStyles.mediumTitle}>
-							Invite some friends to go hunting with!
-						</Text>
-						<CustomButton
-							title="CONTINUE"
-							pressHandler={() => {
-								setModalVisible(true);
-							}}
-						/>
-						<CustomModal
-							modalVisible={modalVisible}
-							setModalVisible={setModalVisible}
-						>
-							<LocationPicker />
-							{/* <FindFriends
-								selected={selectedFriends}
-								setSelected={setSelectedFriends}
-							/> */}
-						</CustomModal>
-					</View>
+					<CustomButton
+						title="Pick locations"
+						pressHandler={navigationHandler}
+					/>
 				</View>
 			</ScrollView>
 		</View>

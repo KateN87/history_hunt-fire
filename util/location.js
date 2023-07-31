@@ -1,9 +1,17 @@
 const GOOGLE_API_KEY = "AIzaSyBTP5sWCK8CsfgU-U-65RsewWr0lL1QqFs";
 
-export const createLocationUrl = ({ lat, lng }) => {
-	return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=14&size=400x200&maptype=roadmap
-    &markers=color:red%7Clabel:S%7C${lat},${lng}&key=${GOOGLE_API_KEY}`;
-};
+export const createLocationUrl = (locations) => {
+	const markers = locations
+		.map(({ latitude, longitude }) => {
+			return `color:0xD01C71
+			|size:small|${latitude},${longitude}`;
+		})
+		.join("&markers=");
 
-/* `https://maps.googleapis.com/maps/api/staticmap?center=57.7020599,12.0159034&zoom=14&size=400x200&maptype=roadmap
-    &markers=color:red%7Clabel:S%7C57.7020599,12.0159034&key=AIzaSyBTP5sWCK8CsfgU-U-65RsewWr0lL1QqFs`; */
+	const path = locations
+		.map(({ latitude, longitude }) => `${latitude},${longitude}`)
+		.join("|");
+
+	return `https://maps.googleapis.com/maps/api/staticmap?center=${locations[0].latitude},${locations[0].longitude}&zoom=11&size=500x200&maptype=roadmap
+      &markers=${markers}&path=color:0x570CBC|weight:5|${path}&key=${GOOGLE_API_KEY}`;
+};
