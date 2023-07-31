@@ -27,7 +27,7 @@ export const MapScreen = ({ navigation }) => {
 			Alert.alert("No location selected", "You have to pick a location");
 			return;
 		}
-		navigation.navigate("locate", pickedLocation);
+		navigation.navigate("create", pickedLocation);
 	}, [navigation, pickedLocation]);
 
 	useLayoutEffect(() => {
@@ -36,7 +36,7 @@ export const MapScreen = ({ navigation }) => {
 				<IconButton
 					type="FontAwesome5"
 					icon="save"
-					size={24}
+					size={38}
 					color={tintColor}
 					pressHandler={savePickedLocation}
 				/>

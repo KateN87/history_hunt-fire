@@ -11,7 +11,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import { Text } from "react-native";
 import { MapScreen } from "../screens/MapScreen";
 import { CreateScreen } from "../screens/CreateScreen";
-import { LocationPickerScreen } from "../screens/LocationPickerScreen";
+import { LocationPickerScreen } from "../components/LocationPicker";
 
 const Stack = createNativeStackNavigator();
 
@@ -76,25 +76,6 @@ export default StartNavigator = () => {
 					<Stack.Screen
 						name="map"
 						component={MapScreen}
-						options={({ navigation }) => ({
-							headerShadowVisible: false,
-							headerTitle: "Select places",
-							headerTintColor: "purple",
-							headerLeft: () => (
-								<View>
-									<Ionicons
-										name="arrow-back"
-										size={48}
-										color="purple"
-										onPress={() => navigation.goBack()}
-									/>
-								</View>
-							),
-						})}
-					/>
-					<Stack.Screen
-						name="locate"
-						component={LocationPickerScreen}
 						options={({ navigation }) => ({
 							headerShadowVisible: false,
 							headerTitle: "Select places",

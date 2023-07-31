@@ -1,23 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import * as Location from "expo-location";
 
-import CustomButton from "../components/CustomButton";
+import CustomButton from "./CustomButton";
 import { createLocationUrl } from "../util/location";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { GlobalStyles } from "../styles/global";
 
-export const LocationPickerScreen = () => {
+export const LocationPicker = ({ pickedLocation, setPickedLocation }) => {
 	const [hasLocatePermissions, setHasLocatePermissions] =
 		Location.useForegroundPermissions();
-	const [pickedLocation, setPickedLocation] = useState();
-	const route = useRoute();
-	const navigation = useNavigation();
 
-	useEffect(() => {
-		if (route.params) {
-			setPickedLocation(route.params);
-		}
-	}, [route]);
+	const navigation = useNavigation();
 
 	//To check permissions
 	useEffect(() => {
@@ -45,6 +39,9 @@ export const LocationPickerScreen = () => {
 
 	return (
 		<View style={styles.container}>
+			<Text style={GlobalStyles.mediumTitle}>
+				Where should the hunters go?
+			</Text>
 			<View style={styles.innerContainer}>
 				{pickedLocation && (
 					<Image
@@ -56,7 +53,7 @@ export const LocationPickerScreen = () => {
 			</View>
 			<View>
 				<CustomButton
-					title="Pick on map"
+					title={pickedLocation ? "Change locations" : "Pick on map"}
 					pressHandler={pickOnMapHandler}
 				/>
 			</View>
@@ -72,7 +69,7 @@ const styles = StyleSheet.create({
 	innerContainer: {
 		width: "100%",
 		height: 250,
-		marginVertical: 8,
+		marginVertical: 10,
 		justifyContent: "center",
 		alignItems: "center",
 		borderColor: "red",

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { collection, addDoc } from "firebase/firestore";
@@ -12,15 +12,17 @@ import { CustomModal } from "../components/CustomModal";
 
 //styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { FindFriends } from "../components/FindFriends";
-import { LocationPicker } from "./LocationPickerScreen";
+import { LocationPicker } from "../components/LocationPicker";
 
 export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
 	const navigation = useNavigation();
+	const route = useRoute();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedFriends, setSelectedFriends] = useState([]);
+	const [pickedLocation, setPickedLocation] = useState();
 
 	const {
 		control,
@@ -33,6 +35,12 @@ export const CreateScreen = () => {
 			password: "",
 		},
 	});
+
+	useEffect(() => {
+		if (route.params) {
+			setPickedLocation(route.params);
+		}
+	}, [route]);
 	const navigationHandler = () => {
 		navigation.navigate("locate");
 	};
@@ -111,10 +119,12 @@ export const CreateScreen = () => {
 						/>
 					</View>
 
-					<CustomButton
-						title="Pick locations"
-						pressHandler={navigationHandler}
-					/>
+					<View style={styles.inputContainer}>
+						<LocationPicker
+							pickedLocation={pickedLocation}
+							setPickedLocation={setPickedLocation}
+						/>
+					</View>
 				</View>
 			</ScrollView>
 		</View>
@@ -130,7 +140,6 @@ const styles = StyleSheet.create({
 	innerContainer: {
 		flex: 1,
 		marginTop: 20,
-		marginHorizontal: 10,
 	},
 	inputContainer: {
 		marginTop: 20,
