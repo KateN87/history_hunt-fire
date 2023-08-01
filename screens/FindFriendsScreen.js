@@ -72,7 +72,6 @@ export const FindFriendsScreen = ({ navigation }) => {
 					data={documents}
 					save="key"
 					label="Added friends"
-					onSelect={() => console.log("SELECTED", selectedFriends)}
 					fontFamily="nunito-bold"
 					inputStyles={{ fontSize: 20 }}
 					dropdownTextStyles={{ fontSize: 20 }}

@@ -5,7 +5,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 //firebase & ctxt
 import { createLocationUrl } from "../util/location";
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 import { AuthContext } from "../context/AuthContext";
 //components
 import { LocationPicker } from "../components/LocationPicker";
@@ -15,6 +15,7 @@ import { AvatarList } from "../components/AvatarList";
 import { GlobalStyles, GlobalColors } from "../styles/global";
 
 export const CreateScreen = () => {
+	console.log("currentUSER:", auth.currentUser.uid);
 	const { user } = useContext(AuthContext);
 	const navigation = useNavigation();
 	const route = useRoute();
@@ -62,7 +63,7 @@ export const CreateScreen = () => {
 			await addDoc(ref, {
 				title,
 				time,
-				createdBy: user.uid,
+				createdBy: auth.currentUser.uid,
 				photoURL: createLocationUrl(pickedLocation),
 				selectedFriends,
 			});

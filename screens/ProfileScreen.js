@@ -74,17 +74,17 @@ export default ProfileScreen = () => {
 				<View>
 					<HuntsContainer
 						title="Invited Hunts"
-						queryArray={["createdBy", "==", auth.currentUser.uid]}
+						queryArray={[
+							"selectedFriends",
+							"==",
+							auth.currentUser.uid,
+						]}
 					/>
 				</View>
 				<View>
 					<HuntsContainer
 						title="My Hunts"
-						queryArray={[
-							"selectedFriends",
-							"array-contains",
-							auth.currentUser.uid,
-						]}
+						queryArray={["createdBy", "==", auth.currentUser.uid]}
 					/>
 				</View>
 				<CustomModal
@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
 		color: GlobalColors.accentYellow,
 	},
 	innerContainer: {
-		marginTop: 50,
 		alignItems: "center",
 	},
 });

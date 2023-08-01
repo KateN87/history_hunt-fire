@@ -6,13 +6,13 @@ import { useCollection } from "../hooks/useCollection";
 
 export const HuntsContainer = ({ title, queryArray }) => {
 	const { documents: huntsDocs } = useCollection("hunts", queryArray);
-
+	console.log("HUNTSDOCS", huntsDocs);
 	return (
-		<View>
+		<View style={styles.mainContainer}>
 			<Text style={[GlobalStyles.mediumTitle, styles.pinkText]}>
 				{title}:
 			</Text>
-			{huntsDocs &&
+			{huntsDocs.length > 0 &&
 				huntsDocs.map((hunt) => (
 					<View style={styles.huntContainer}>
 						<View style={styles.titleImageContainer}>
@@ -60,6 +60,12 @@ export const HuntsContainer = ({ title, queryArray }) => {
 						</View>
 					</View>
 				))}
+			{huntsDocs.length === 0 && (
+				<Text style={[GlobalStyles.smallTitle, styles.withText]}>
+					{" "}
+					You have not been invited to any hunts yet
+				</Text>
+			)}
 		</View>
 	);
 };
@@ -71,11 +77,14 @@ const styles = StyleSheet.create({
 	greyText: {
 		color: GlobalColors.darkGrey,
 	},
+	mainContainer: {
+		marginVertical: 15,
+	},
 	huntContainer: {
 		flex: 1,
 		borderBottomWidth: 1,
 		borderBottomColor: GlobalColors.lightGrey,
-		marginVertical: 10,
+		marginVertical: 5,
 	},
 	titleImageContainer: {
 		flexDirection: "row",

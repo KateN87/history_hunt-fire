@@ -9,8 +9,6 @@ import { GlobalColors } from "../styles/global";
 export const MapScreen = ({ navigation }) => {
 	const [pickedLocation, setPickedLocation] = useState([]);
 	const [initialRegion, setInitialRegion] = useState();
-	console.log(pickedLocation);
-
 	useEffect(() => {
 		const getLocation = async () => {
 			const location = await Location.getCurrentPositionAsync();
