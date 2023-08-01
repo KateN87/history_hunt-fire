@@ -1,14 +1,12 @@
 import { useForm, Controller } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-
-import { useSignup } from "../hooks/useSignup";
-
-import { GlobalStyles } from "../styles/global";
-import { GlobalColors } from "../styles/global";
-
+//hooks & components
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
+import { useSignup } from "../hooks/useSignup";
+//styles
+import { GlobalStyles, GlobalColors } from "../styles/global";
 
 const EMAIL_REGEX =
 	/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

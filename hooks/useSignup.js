@@ -1,10 +1,9 @@
 import { useState, useContext } from "react";
-import { updateProfile } from "firebase/auth";
-import { auth } from "../firebase/config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+//firebase & ctx
+import { updateProfile, createUserWithEmailAndPassword } from "firebase/auth";
+import { db, auth } from "../firebase/config";
+import { doc, setDoc } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
-import { db } from "../firebase/config";
-import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 
 export const useSignup = () => {
 	const { dispatch } = useContext(AuthContext);

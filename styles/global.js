@@ -36,7 +36,7 @@ export const GlobalStyles = {
 		backgroundColor: GlobalColors.error100,
 		paddingHorizontal: 10,
 		paddingVertical: 5,
-		marginTop: 5,
+		marginHorizontal: 25,
 	},
 	errorText: {
 		fontSize: 16,

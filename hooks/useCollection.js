@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { db } from "../firebase/config";
-
-//firebase imports
+//firebase
 import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 export const useCollection = (coll, _q) => {
 	const [documents, setDocuments] = useState(null);
@@ -36,11 +35,3 @@ export const useCollection = (coll, _q) => {
 
 	return { documents };
 };
-
-/* Reuben: "89AVZHME8nZn13HIST3WaMs48BU2";
-
-Kate: "5kGzWkPpVCZ6LvguuQttRzrEqts2";
-
-Superman: "OQLenNsaXNb222e6vxwWR0zLlK53";
-
-Rutan: "y1A7SVaCdePY4McY1gh2nXtQ3tx1" */

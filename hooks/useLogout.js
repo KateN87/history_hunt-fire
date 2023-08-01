@@ -1,4 +1,5 @@
 import { useContext } from "react";
+//firebase & ctx
 import { auth } from "../firebase/config";
 import { signOut } from "firebase/auth";
 import { AuthContext } from "../context/AuthContext";

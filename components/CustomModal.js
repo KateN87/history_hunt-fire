@@ -1,4 +1,5 @@
 import { Modal, Text, View, StyleSheet, Pressable } from "react-native";
+//Styles
 import { GlobalColors } from "../styles/global";
 
 const CustomModal = ({ children, modalVisible, setModalVisible }) => {

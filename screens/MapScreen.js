@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import IconButton from "../components/IconButton";
 import * as Location from "expo-location";
+//styles and components
+import IconButton from "../components/IconButton";
 import { GlobalColors } from "../styles/global";
 
 export const MapScreen = ({ navigation }) => {

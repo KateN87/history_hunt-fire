@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import * as Location from "expo-location";
-
+import { useNavigation } from "@react-navigation/native";
+//comp & util
 import CustomButton from "./CustomButton";
 import { createLocationUrl } from "../util/location";
-import { useNavigation } from "@react-navigation/native";
+//Styles
 import { GlobalStyles } from "../styles/global";
 
-export const LocationPicker = ({ pickedLocation, setPickedLocation }) => {
+export const LocationPicker = ({ pickedLocation }) => {
 	const [hasLocatePermissions, setHasLocatePermissions] =
 		Location.useForegroundPermissions();
 

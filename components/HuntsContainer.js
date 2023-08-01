@@ -1,12 +1,65 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
+//Styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
+import { AvatarList } from "./AvatarList";
+import { useCollection } from "../hooks/useCollection";
 
-export const HuntsContainer = ({ title, documents }) => {
+export const HuntsContainer = ({ title, queryArray }) => {
+	const { documents: huntsDocs } = useCollection("hunts", queryArray);
+
 	return (
 		<View>
 			<Text style={[GlobalStyles.mediumTitle, styles.pinkText]}>
-				{title}
+				{title}:
 			</Text>
+			{huntsDocs &&
+				huntsDocs.map((hunt) => (
+					<View style={styles.huntContainer}>
+						<View style={styles.titleImageContainer}>
+							<Image
+								source={{ uri: hunt.photoURL }}
+								style={styles.huntImage}
+							/>
+							<Text
+								style={[
+									GlobalStyles.mediumTitle,
+									styles.greyText,
+								]}
+							>
+								{hunt.title}
+							</Text>
+						</View>
+
+						<View style={styles.friendContainer}>
+							{hunt.selectedFriends.length != 0 && (
+								<>
+									<Text
+										style={[
+											GlobalStyles.smallTitle,
+											styles.withText,
+										]}
+									>
+										With:
+									</Text>
+									<AvatarList
+										selectedFriends={hunt.selectedFriends}
+										imageStyle={styles.avatarImage}
+									/>
+								</>
+							)}
+							{hunt.selectedFriends.length === 0 && (
+								<Text
+									style={[
+										GlobalStyles.smallTitle,
+										styles.withText,
+									]}
+								>
+									Soloing it!
+								</Text>
+							)}
+						</View>
+					</View>
+				))}
 		</View>
 	);
 };
@@ -14,5 +67,38 @@ export const HuntsContainer = ({ title, documents }) => {
 const styles = StyleSheet.create({
 	pinkText: {
 		color: GlobalColors.softPink,
+	},
+	greyText: {
+		color: GlobalColors.darkGrey,
+	},
+	huntContainer: {
+		flex: 1,
+		borderBottomWidth: 1,
+		borderBottomColor: GlobalColors.lightGrey,
+		marginVertical: 10,
+	},
+	titleImageContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	friendContainer: {
+		alignItems: "flex-start",
+		margin: 10,
+	},
+	huntImage: {
+		borderRadius: 100,
+		width: 50,
+		height: 50,
+		borderWidth: 2,
+		borderColor: GlobalColors.hotPink,
+		margin: 10,
+	},
+	avatarImage: {
+		borderRadius: 100,
+		width: 30,
+		height: 30,
+		borderWidth: 2,
+		borderColor: GlobalColors.hotPink,
+		marginVertical: 10,
 	},
 });

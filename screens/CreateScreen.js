@@ -1,31 +1,28 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { useNavigation, useRoute } from "@react-navigation/native";
-
 //firebase & ctxt
+import { createLocationUrl } from "../util/location";
+import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { AuthContext } from "../context/AuthContext";
-
 //components
-import { CustomModal } from "../components/CustomModal";
-import { FindFriendsScreen } from "./FindFriendsScreen";
 import { LocationPicker } from "../components/LocationPicker";
-
-//styles
-import { GlobalColors, GlobalStyles } from "../styles/global";
 import CustomButton from "../components/CustomButton";
 import { AvatarList } from "../components/AvatarList";
+//styles
+import { GlobalStyles, GlobalColors } from "../styles/global";
 
 export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
 	const navigation = useNavigation();
 	const route = useRoute();
-	const [modalVisible, setModalVisible] = useState(false);
+	const [error, setError] = useState(null);
+	const [isPending, setIsPending] = useState(false);
+
 	const [selectedFriends, setSelectedFriends] = useState([]);
 	const [pickedLocation, setPickedLocation] = useState();
-	const [friendList, setFriendList] = useState([]);
 
 	const {
 		control,
@@ -34,8 +31,8 @@ export const CreateScreen = () => {
 		formState: { errors },
 	} = useForm({
 		defaultValues: {
-			email: "",
-			password: "",
+			title: "",
+			time: "",
 		},
 	});
 
@@ -45,30 +42,6 @@ export const CreateScreen = () => {
 				setPickedLocation(route.params.locations);
 			} else if (route.params.friends) {
 				setSelectedFriends(route.params.friends);
-
-				const getFriendNames = async () => {
-					const updatedList = await Promise.all(
-						route.params.friends.map(async (friend) => {
-							const q = query(
-								collection(db, "users"),
-								where("__name__", "==", friend)
-							);
-							const querySnapshot = await getDocs(q);
-							const friendData = querySnapshot.docs.map((doc) =>
-								doc.data()
-							);
-							return {
-								userId: friend,
-								displayName: friendData[0].displayName,
-								photoURL: friendData[0].photoURL,
-							};
-						})
-					);
-
-					setFriendList(updatedList);
-					console.log("updated list: ", updatedList);
-				};
-				getFriendNames();
 			}
 		}
 	}, [route]);
@@ -78,22 +51,29 @@ export const CreateScreen = () => {
 	};
 
 	const onSubmit = async ({ title, time }) => {
-		const createdBy = {
-			displayName: user.displayName,
-			photoURL: user.photoURL,
-			id: user.uid,
-		};
+		setError(null);
+		setIsPending(true);
+		try {
+			if (!pickedLocation) {
+				throw new Error("All fields must be filled!");
+			}
 
-		const ref = collection(db, "hunts");
-		const createdHunt = await addDoc(ref, {
-			title,
-			time,
-			createdBy,
-		});
+			const ref = collection(db, "hunts");
+			await addDoc(ref, {
+				title,
+				time,
+				createdBy: user.uid,
+				photoURL: createLocationUrl(pickedLocation),
+				selectedFriends,
+			});
 
-		console.log("CREATED", createdHunt);
-		reset();
-		navigation.navigate("profile");
+			reset();
+			setIsPending(false);
+			navigation.navigate("profile");
+		} catch (err) {
+			setError(err.message);
+			setIsPending(false);
+		}
 	};
 
 	return (
@@ -161,12 +141,17 @@ export const CreateScreen = () => {
 						<Text style={GlobalStyles.mediumTitle}>
 							Who are going hunting?
 						</Text>
-						{friendList.length === 0 && (
+						{selectedFriends.length === 0 && (
 							<Text style={GlobalStyles.smallTitle}>
 								No friends added yet
 							</Text>
 						)}
-						<AvatarList avatarArray={friendList} />
+						{selectedFriends.length > 0 && (
+							<AvatarList
+								selectedFriends={selectedFriends}
+								imageStyle={styles.image}
+							/>
+						)}
 						<CustomButton
 							title="Find friends"
 							pressHandler={() =>
@@ -174,6 +159,22 @@ export const CreateScreen = () => {
 							}
 						/>
 					</View>
+					{error && (
+						<View style={GlobalStyles.errorContainer}>
+							<Text style={GlobalStyles.errorText}>{error}</Text>
+						</View>
+					)}
+
+					{!isPending && (
+						<CustomButton
+							title="Save Hunt"
+							pressHandler={handleSubmit(onSubmit)}
+						/>
+					)}
+
+					{isPending && (
+						<CustomButton title="Saving..." disabled={true} />
+					)}
 				</View>
 			</ScrollView>
 		</View>
@@ -189,12 +190,20 @@ const styles = StyleSheet.create({
 	},
 	innerContainer: {
 		flex: 1,
-		marginTop: 20,
+		marginHorizontal: 25,
 	},
 	inputContainer: {
-		margin: 25,
+		marginVertical: 10,
 	},
 	modalView: {
 		flex: 1,
+	},
+	image: {
+		borderRadius: 100,
+		width: 60,
+		height: 60,
+		borderWidth: 2,
+		borderColor: GlobalColors.hotPink,
+		margin: 10,
 	},
 });

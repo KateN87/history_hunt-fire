@@ -8,20 +8,14 @@ import {
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-/* import * as ImagePicker from "expo-image-picker"; */
-
-import { useContext, useEffect, useRef, useState } from "react";
-import IconButton from "./IconButton";
+import { useEffect, useRef, useState } from "react";
+//firebase
+import { storage } from "../firebase/config";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+//styles
 import { GlobalColors } from "../styles/global";
-import { AuthContext } from "../context/AuthContext";
-import { db, storage } from "../firebase/config";
-import {
-	ref,
-	getDownloadURL,
-	uploadBytes,
-	doc,
-	updateDoc,
-} from "firebase/storage";
+//Components
+import IconButton from "./IconButton";
 
 export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 	const storageRef = ref(storage, `${bucketname}/${filename}`);
@@ -98,26 +92,6 @@ export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 		);
 	}
 
-	/* 	const pickImage = async () => {
-		// No permissions request is necessary for launching the image library
-		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
-			allowsEditing: false,
-			aspect: [4, 3],
-			quality: 1,
-			allowsMultipleSelection: false,
-		});
-
-		console.log(result);
-
-		if (!result.canceled) {
-			setPhoto(result.assets[0].uri);
-		}
-		if (result.canceled) {
-			console.log("canceled");
-		}
-	}; */
-
 	if (hasCameraPermissions === undefined) {
 		return <Text>Requesting permissions...</Text>;
 	} else if (!hasCameraPermissions) {
@@ -146,13 +120,6 @@ export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 					size={64}
 					pressHandler={toggleCameraType}
 				/>
-				{/* <IconButton
-					type={"Foundation"}
-					icon="photo"
-					color={GlobalColors.accentYellow}
-					size={64}
-					pressHandler={pickImage}
-				/> */}
 			</View>
 		</Camera>
 	);

@@ -3,7 +3,6 @@ import {
 	MaterialCommunityIcons,
 	Foundation,
 } from "@expo/vector-icons";
-
 import { Pressable, StyleSheet } from "react-native";
 
 const IconButton = ({ type, icon, size, color, pressHandler }) => {

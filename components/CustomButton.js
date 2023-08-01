@@ -1,5 +1,6 @@
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+//Styles
 import { GlobalColors } from "../styles/global";
 
 export default CustomButton = ({ title, pressHandler, disabled }) => {
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		borderRadius: 25,
-		elevation: 2,
+		elevation: 4,
 	},
 	buttonText: {
 		color: "white",

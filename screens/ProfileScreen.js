@@ -20,6 +20,7 @@ import { updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase/config";
 import { useNavigation } from "@react-navigation/native";
 import { doc, updateDoc } from "firebase/firestore";
+import { ScrollView } from "react-native";
 
 export default ProfileScreen = () => {
 	const { user } = useContext(AuthContext);
@@ -35,7 +36,6 @@ export default ProfileScreen = () => {
 	useEffect(() => {
 		if (imgUrl) {
 			const updateImage = async () => {
-				console.log("currentUser", auth.currentUser.uid);
 				await updateProfile(auth.currentUser, {
 					photoURL: imgUrl,
 				});
@@ -67,33 +67,44 @@ export default ProfileScreen = () => {
 						pressHandler={() => setModalVisible(true)}
 					/>
 				</View>
-
 				<Image source={{ uri: user.photoURL }} style={styles.image} />
 				<Text style={GlobalStyles.largeTitle}>{user.displayName}</Text>
 			</View>
-			<View>
-				<HuntsContainer title="Active Hunts" />
-			</View>
-			<View>
-				<HuntsContainer title="Planned Hunts" />
-			</View>
-			<CustomModal
-				modalVisible={modalVisible}
-				setModalVisible={setModalVisible}
-			>
-				<PhotoPicker
-					filename={user.uid}
-					bucketname={"profilephotos"}
-					setImgUrl={setImgUrl}
-				/>
-			</CustomModal>
+			<ScrollView>
+				<View>
+					<HuntsContainer
+						title="Invited Hunts"
+						queryArray={["createdBy", "==", auth.currentUser.uid]}
+					/>
+				</View>
+				<View>
+					<HuntsContainer
+						title="My Hunts"
+						queryArray={[
+							"selectedFriends",
+							"array-contains",
+							auth.currentUser.uid,
+						]}
+					/>
+				</View>
+				<CustomModal
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+				>
+					<PhotoPicker
+						filename={user.uid}
+						bucketname={"profilephotos"}
+						setImgUrl={setImgUrl}
+					/>
+				</CustomModal>
 
-			<View style={styles.innerContainer}>
-				<CustomButton
-					title="Create Hunt"
-					pressHandler={navigateHandler}
-				/>
-			</View>
+				<View style={styles.innerContainer}>
+					<CustomButton
+						title="Create Hunt"
+						pressHandler={navigateHandler}
+					/>
+				</View>
+			</ScrollView>
 		</View>
 	);
 };
@@ -101,7 +112,8 @@ export default ProfileScreen = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		marginTop: 60,
+		marginVertical: 60,
+		marginHorizontal: 20,
 	},
 	imageNameContainer: {
 		alignItems: "center",
@@ -116,7 +128,7 @@ const styles = StyleSheet.create({
 	editBtn: {
 		position: "absolute",
 		top: 90,
-		right: 125,
+		right: 100,
 		zIndex: 5,
 	},
 	logoutBtn: {

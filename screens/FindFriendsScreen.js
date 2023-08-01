@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, Alert } from "react-native";
+import { MultipleSelectList } from "react-native-dropdown-select-list";
+//firebase
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
-import { SafeAreaView } from "react-native";
-import { MultipleSelectList } from "react-native-dropdown-select-list";
+//styles & components
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import IconButton from "../components/IconButton";
-import { Alert } from "react-native";
 
 export const FindFriendsScreen = ({ navigation }) => {
 	const [documents, setDocuments] = useState(null);
@@ -40,7 +40,6 @@ export const FindFriendsScreen = ({ navigation }) => {
 	useEffect(() => {
 		setSelectedFriends([]);
 		//1st arg: database we want to connect to, 2nd arg: name of the colleciton
-
 		let ref = collection(db, "users");
 
 		//get documents from 1st arg: reference, 2nd arg function which fires everytime we get data change
