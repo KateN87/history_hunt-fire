@@ -1,12 +1,16 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 //Styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import { AvatarList } from "./AvatarList";
 import { useCollection } from "../hooks/useCollection";
 
-export const HuntsContainer = ({ title, queryArray }) => {
+export const HuntsContainer = ({ title, queryArray, pressHandler }) => {
 	const { documents: huntsDocs } = useCollection("hunts", queryArray);
-	console.log("HUNTSDOCS", huntsDocs);
+
+	if (!huntsDocs) {
+		return <Text>Loading...</Text>;
+	}
+
 	return (
 		<View style={styles.mainContainer}>
 			<Text style={[GlobalStyles.mediumTitle, styles.pinkText]}>
@@ -14,58 +18,63 @@ export const HuntsContainer = ({ title, queryArray }) => {
 			</Text>
 			{huntsDocs.length > 0 &&
 				huntsDocs.map((hunt) => (
-					<View style={styles.huntContainer}>
-						<View style={styles.titleImageContainer}>
-							<Image
-								source={{ uri: hunt.photoURL }}
-								style={styles.huntImage}
-							/>
-							<Text
-								style={[
-									GlobalStyles.mediumTitle,
-									styles.greyText,
-								]}
-							>
-								{hunt.title}
-							</Text>
-						</View>
+					<Pressable onPress={() => pressHandler("hunt", { hunt })}>
+						<View style={styles.huntContainer}>
+							<View style={styles.titleImageContainer}>
+								<Image
+									source={{ uri: hunt.photoURL }}
+									style={styles.huntImage}
+								/>
+								<Text
+									style={[
+										GlobalStyles.mediumTitle,
+										styles.greyText,
+									]}
+								>
+									{hunt.title}
+								</Text>
+							</View>
 
-						<View style={styles.friendContainer}>
-							{hunt.selectedFriends.length != 0 && (
-								<>
+							<View style={styles.friendContainer}>
+								{hunt.selectedFriends.length != 0 && (
+									<>
+										<Text
+											style={[
+												GlobalStyles.smallTitle,
+												styles.withText,
+											]}
+										>
+											With:
+										</Text>
+										<AvatarList
+											selectedFriends={
+												hunt.selectedFriends
+											}
+											imageStyle={styles.avatarImage}
+										/>
+									</>
+								)}
+								{hunt.selectedFriends.length === 0 && (
 									<Text
 										style={[
 											GlobalStyles.smallTitle,
 											styles.withText,
 										]}
 									>
-										With:
+										Soloing it!
 									</Text>
-									<AvatarList
-										selectedFriends={hunt.selectedFriends}
-										imageStyle={styles.avatarImage}
-									/>
-								</>
-							)}
-							{hunt.selectedFriends.length === 0 && (
-								<Text
-									style={[
-										GlobalStyles.smallTitle,
-										styles.withText,
-									]}
-								>
-									Soloing it!
-								</Text>
-							)}
+								)}
+							</View>
 						</View>
-					</View>
+					</Pressable>
 				))}
-			{huntsDocs.length === 0 && (
-				<Text style={[GlobalStyles.smallTitle, styles.withText]}>
-					{" "}
-					You have not been invited to any hunts yet
-				</Text>
-			)}
+			{!huntsDocs ||
+				(huntsDocs.length === 0 && (
+					<Text style={[GlobalStyles.smallTitle, styles.withText]}>
+						{" "}
+						You have not been invited to any hunts yet
+					</Text>
+				))}
 		</View>
 	);
 };

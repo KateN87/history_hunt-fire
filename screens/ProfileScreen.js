@@ -1,5 +1,13 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, Pressable } from "react-native";
+import {
+	View,
+	Text,
+	Image,
+	StyleSheet,
+	Pressable,
+	ScrollView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 //ctx & hooks
 import { AuthContext } from "../context/AuthContext";
@@ -18,19 +26,16 @@ import { GlobalColors, GlobalStyles } from "../styles/global";
 //firebase
 import { updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase/config";
-import { useNavigation } from "@react-navigation/native";
 import { doc, updateDoc } from "firebase/firestore";
-import { ScrollView } from "react-native";
 
-export default ProfileScreen = () => {
+export default ProfileScreen = ({ navigation }) => {
 	const { user } = useContext(AuthContext);
 	const { logout } = useLogout();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [imgUrl, setImgUrl] = useState();
-	const navigation = useNavigation();
 
-	const navigateHandler = () => {
-		navigation.navigate("create");
+	const navigateHandler = (screen, props) => {
+		navigation.navigate(screen, props);
 	};
 
 	useEffect(() => {
@@ -70,7 +75,17 @@ export default ProfileScreen = () => {
 				<Image source={{ uri: user.photoURL }} style={styles.image} />
 				<Text style={GlobalStyles.largeTitle}>{user.displayName}</Text>
 			</View>
-			<ScrollView>
+			<CustomModal
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+			>
+				<PhotoPicker
+					filename={user.uid}
+					bucketname={"profilephotos"}
+					setImgUrl={setImgUrl}
+				/>
+			</CustomModal>
+			<ScrollView showsVerticalScrollIndicator={false}>
 				<View>
 					<HuntsContainer
 						title="Invited Hunts"
@@ -85,23 +100,13 @@ export default ProfileScreen = () => {
 					<HuntsContainer
 						title="My Hunts"
 						queryArray={["createdBy", "==", auth.currentUser.uid]}
+						pressHandler={navigateHandler}
 					/>
 				</View>
-				<CustomModal
-					modalVisible={modalVisible}
-					setModalVisible={setModalVisible}
-				>
-					<PhotoPicker
-						filename={user.uid}
-						bucketname={"profilephotos"}
-						setImgUrl={setImgUrl}
-					/>
-				</CustomModal>
-
 				<View style={styles.innerContainer}>
 					<CustomButton
 						title="Create Hunt"
-						pressHandler={navigateHandler}
+						pressHandler={() => navigateHandler("create")}
 					/>
 				</View>
 			</ScrollView>

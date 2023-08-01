@@ -14,6 +14,7 @@ import { MapScreen } from "../screens/MapScreen";
 import { CreateScreen } from "../screens/CreateScreen";
 import { FindFriendsScreen } from "../screens/FindFriendsScreen";
 import LogoTitle from "../components/LogoTitle";
+import HuntScreen from "../screens/HuntScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -100,6 +101,24 @@ export default StartNavigator = () => {
 						options={({ navigation }) => ({
 							headerShadowVisible: false,
 							headerTitle: "Find Friends",
+							headerTintColor: "purple",
+							headerLeft: () => (
+								<View>
+									<Ionicons
+										name="arrow-back"
+										size={48}
+										color="purple"
+										onPress={() => navigation.goBack()}
+									/>
+								</View>
+							),
+						})}
+					/>
+					<Stack.Screen
+						name="hunt"
+						component={HuntScreen}
+						options={({ navigation }) => ({
+							headerShadowVisible: false,
 							headerTintColor: "purple",
 							headerLeft: () => (
 								<View>
