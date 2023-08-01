@@ -14,8 +14,14 @@ import { useContext, useEffect, useRef, useState } from "react";
 import IconButton from "./IconButton";
 import { GlobalColors } from "../styles/global";
 import { AuthContext } from "../context/AuthContext";
-import { storage } from "../firebase/config";
-import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { db, storage } from "../firebase/config";
+import {
+	ref,
+	getDownloadURL,
+	uploadBytes,
+	doc,
+	updateDoc,
+} from "firebase/storage";
 
 export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 	const storageRef = ref(storage, `${bucketname}/${filename}`);
@@ -75,6 +81,7 @@ export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 
 			// Get the download URL of the uploaded image
 			const image = await getDownloadURL(storageRef);
+
 			setImgUrl(image);
 
 			setPhoto(undefined);

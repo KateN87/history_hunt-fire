@@ -17,8 +17,9 @@ import { GlobalColors, GlobalStyles } from "../styles/global";
 
 //firebase
 import { updateProfile } from "firebase/auth";
-import { auth } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 import { useNavigation } from "@react-navigation/native";
+import { doc, updateDoc } from "firebase/firestore";
 
 export default ProfileScreen = () => {
 	const { user } = useContext(AuthContext);
@@ -34,11 +35,16 @@ export default ProfileScreen = () => {
 	useEffect(() => {
 		if (imgUrl) {
 			const updateImage = async () => {
+				console.log("currentUser", auth.currentUser.uid);
 				await updateProfile(auth.currentUser, {
 					photoURL: imgUrl,
 				});
+				const docRef = doc(db, "users", auth.currentUser.uid);
+				await updateDoc(docRef, {
+					photoURL: imgUrl,
+				});
 			};
-			console.log("IMAGEURL", imgUrl);
+
 			updateImage();
 		}
 	});

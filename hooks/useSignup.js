@@ -4,12 +4,14 @@ import { auth } from "../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { AuthContext } from "../context/AuthContext";
 import { db } from "../firebase/config";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 
 export const useSignup = () => {
 	const { dispatch } = useContext(AuthContext);
 	const [error, setError] = useState(null);
 	const [isPending, setIsPending] = useState(false);
+	const defaultPhotoURL =
+		"https://firebasestorage.googleapis.com/v0/b/historyhunt-a8c4b.appspot.com/o/profilephotos%2FAnonymousProfilePic.png?alt=media&token=18bd054d-bdcb-4e89-ad20-b53c9e832a25";
 
 	const signup = async (email, password, displayName /* thumbnail */) => {
 		setError(null);
@@ -23,17 +25,12 @@ export const useSignup = () => {
 			);
 			await updateProfile(auth.currentUser, {
 				displayName,
+				photoURL: defaultPhotoURL,
 			});
 
-			const ref = collection(db, "users");
-			await addDoc(ref, {
+			await setDoc(doc(db, "users", res.user.uid), {
 				displayName,
-				userId: res.user.uid,
-			});
-
-			await updateProfile(auth.currentUser, {
-				photoURL:
-					"https://firebasestorage.googleapis.com/v0/b/historyhunt-a8c4b.appspot.com/o/profilephotos%2FAnonymousProfilePic.png?alt=media&token=18bd054d-bdcb-4e89-ad20-b53c9e832a25",
+				photoURL: defaultPhotoURL,
 			});
 
 			dispatch({ type: "LOGIN", payload: res.user });

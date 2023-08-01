@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -16,6 +16,7 @@ import { LocationPicker } from "../components/LocationPicker";
 //styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import CustomButton from "../components/CustomButton";
+import { AvatarList } from "../components/AvatarList";
 
 export const CreateScreen = () => {
 	const { user } = useContext(AuthContext);
@@ -50,7 +51,7 @@ export const CreateScreen = () => {
 						route.params.friends.map(async (friend) => {
 							const q = query(
 								collection(db, "users"),
-								where("userId", "==", friend)
+								where("__name__", "==", friend)
 							);
 							const querySnapshot = await getDocs(q);
 							const friendData = querySnapshot.docs.map((doc) =>
@@ -59,10 +60,13 @@ export const CreateScreen = () => {
 							return {
 								userId: friend,
 								displayName: friendData[0].displayName,
+								photoURL: friendData[0].photoURL,
 							};
 						})
 					);
+
 					setFriendList(updatedList);
+					console.log("updated list: ", updatedList);
 				};
 				getFriendNames();
 			}
@@ -162,10 +166,7 @@ export const CreateScreen = () => {
 								No friends added yet
 							</Text>
 						)}
-						{friendList.length > 0 &&
-							friendList.map((friend) => (
-								<Text>{friend.displayName}</Text>
-							))}
+						<AvatarList avatarArray={friendList} />
 						<CustomButton
 							title="Find friends"
 							pressHandler={() =>
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 	},
 	inputContainer: {
-		marginTop: 20,
+		margin: 25,
 	},
 	modalView: {
 		flex: 1,

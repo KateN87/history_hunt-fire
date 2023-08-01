@@ -50,7 +50,7 @@ export const FindFriendsScreen = ({ navigation }) => {
 				const data = doc.data();
 				const modifiedData = {
 					value: data.displayName,
-					key: data.userId,
+					key: doc.id,
 				};
 				results.push(modifiedData);
 			});
@@ -69,8 +69,9 @@ export const FindFriendsScreen = ({ navigation }) => {
 			<View style={{ padding: 20 }}>
 				<Text style={GlobalStyles.largeTitle}>Add some friends!</Text>
 				<MultipleSelectList
-					setSelected={(val, key) => setSelectedFriends(val)}
+					setSelected={(val) => setSelectedFriends(val)}
 					data={documents}
+					save="key"
 					label="Added friends"
 					onSelect={() => console.log("SELECTED", selectedFriends)}
 					fontFamily="nunito-bold"
