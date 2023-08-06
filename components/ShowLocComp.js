@@ -1,6 +1,4 @@
-import { useEffect } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
-import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 //comp & util
 import CustomButton from "./CustomButton";
@@ -8,35 +6,12 @@ import { createLocationUrl } from "../util/location";
 //Styles
 import { GlobalStyles } from "../styles/global";
 
-export const LocationPicker = ({ pickedLocation }) => {
-	const [hasLocatePermissions, setHasLocatePermissions] =
-		Location.useForegroundPermissions();
-
+export const ShowLocComp = ({ pickedLocation }) => {
 	const navigation = useNavigation();
-
-	//To check permissions
-	useEffect(() => {
-		(async () => {
-			const locatePermission =
-				await Location.requestForegroundPermissionsAsync();
-			setHasLocatePermissions(locatePermission.status === "granted");
-		})();
-	}, []);
 
 	const pickOnMapHandler = () => {
 		navigation.navigate("map");
 	};
-
-	if (hasLocatePermissions === undefined) {
-		return <Text>Requesting permissions...</Text>;
-	} else if (!hasLocatePermissions) {
-		return (
-			<Text>
-				Permission for gps location not granted. Please change this in
-				settings.
-			</Text>
-		);
-	}
 
 	return (
 		<View style={styles.container}>

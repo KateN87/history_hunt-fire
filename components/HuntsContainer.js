@@ -18,7 +18,10 @@ export const HuntsContainer = ({ title, queryArray, pressHandler }) => {
 			</Text>
 			{huntsDocs.length > 0 &&
 				huntsDocs.map((hunt) => (
-					<Pressable onPress={() => pressHandler("hunt", { hunt })}>
+					<Pressable
+						onPress={() => pressHandler("hunt", { hunt })}
+						key={hunt.id}
+					>
 						<View style={styles.huntContainer}>
 							<View style={styles.titleImageContainer}>
 								<Image

@@ -8,20 +8,17 @@ import { collection, addDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
 import { AuthContext } from "../context/AuthContext";
 //components
-import { LocationPicker } from "../components/LocationPicker";
+import { ShowLocComp } from "../components/ShowLocComp";
 import CustomButton from "../components/CustomButton";
 import { AvatarList } from "../components/AvatarList";
 //styles
 import { GlobalStyles, GlobalColors } from "../styles/global";
 
 export const CreateScreen = () => {
-	console.log("currentUSER:", auth.currentUser.uid);
-	const { user } = useContext(AuthContext);
 	const navigation = useNavigation();
 	const route = useRoute();
 	const [error, setError] = useState(null);
 	const [isPending, setIsPending] = useState(false);
-
 	const [selectedFriends, setSelectedFriends] = useState([]);
 	const [pickedLocation, setPickedLocation] = useState();
 
@@ -65,6 +62,7 @@ export const CreateScreen = () => {
 				time,
 				createdBy: auth.currentUser.uid,
 				photoURL: createLocationUrl(pickedLocation),
+				pickedLocation,
 				selectedFriends,
 			});
 
@@ -133,7 +131,7 @@ export const CreateScreen = () => {
 					</View>
 
 					<View style={styles.inputContainer}>
-						<LocationPicker
+						<ShowLocComp
 							pickedLocation={pickedLocation}
 							setPickedLocation={setPickedLocation}
 						/>

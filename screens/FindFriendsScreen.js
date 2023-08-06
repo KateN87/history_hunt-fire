@@ -20,6 +20,7 @@ export const FindFriendsScreen = ({ navigation }) => {
 			);
 			return;
 		}
+		console.log("SELECTED FRIENDS", selectedFriends);
 		navigation.navigate("create", { friends: selectedFriends });
 	}, [navigation, selectedFriends]);
 
