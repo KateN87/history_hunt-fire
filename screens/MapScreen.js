@@ -15,6 +15,21 @@ export const MapScreen = ({ navigation }) => {
 	const hasLocatePermissions = usePermission();
 	const initialRegion = useLocation();
 
+	const savePickedLocation = useCallback(async () => {
+		if (!pickedLocation || pickedLocation.length === 0) {
+			Alert.alert("No location selected", "You have to pick a location");
+			return;
+		}
+
+		try {
+			navigation.navigate("create", {
+				locations: pickedLocation,
+			});
+		} catch (error) {
+			console.error("Error fetching addresses:", error);
+		}
+	}, [navigation, pickedLocation]);
+
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: ({ tintColor }) => (
@@ -29,30 +44,13 @@ export const MapScreen = ({ navigation }) => {
 		});
 	}, [navigation, savePickedLocation]);
 
-	const savePickedLocation = useCallback(async () => {
-		if (!pickedLocation) {
-			Alert.alert("No location selected", "You have to pick a location");
-			return;
-		}
-
-		try {
-			navigation.navigate("create", {
-				locations: pickedLocation,
-			});
-		} catch (error) {
-			console.error("Error fetching addresses:", error);
-		}
-	}, [navigation, pickedLocation]);
-
 	const pressHandler = async (e) => {
 		const latitude = e.nativeEvent.coordinate.latitude;
 		const longitude = e.nativeEvent.coordinate.longitude;
 
 		const address = await getHumanReadableAddress({ latitude, longitude });
-		setPickedLocation((prev) => [
-			...prev,
-			{ latitude, longitude, address },
-		]);
+		const updatedLocation = { latitude, longitude, address };
+		setPickedLocation((prev) => [...prev, updatedLocation]);
 	};
 
 	if (hasLocatePermissions === undefined) {
