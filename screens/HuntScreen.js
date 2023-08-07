@@ -75,10 +75,10 @@ export default LoginScreen = ({ navigation }) => {
 			)}
 			{startedHunt && (
 				<View style={styles.huntingContainer}>
-					<ActiveHunting hunt={hunt} />
-					<CustomButton
-						title="Stop hunting!"
-						pressHandler={() => setStartedHunt(false)}
+					<ActiveHunting
+						hunt={hunt}
+						setStartedHunt={setStartedHunt}
+						startedHunt={startedHunt}
 					/>
 				</View>
 			)}

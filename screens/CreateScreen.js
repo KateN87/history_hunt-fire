@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: 25,
 	},
 	inputContainer: {
+		flex: 1,
 		marginVertical: 10,
 	},
 	modalView: {

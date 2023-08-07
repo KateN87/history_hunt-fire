@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
@@ -10,13 +10,44 @@ import { getRoute } from "../util/location";
 import useLocation from "../hooks/useLocation";
 import usePermission from "../hooks/usePermission";
 import { LinearGradient } from "expo-linear-gradient";
+import CustomButton from "./CustomButton";
 
-export const ActiveHunting = ({ hunt }) => {
+export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
 	const hasLocatePermissions = usePermission();
 	const [coords, setCoords] = useState();
 	const [isLoading, setIsLoading] = useState(false);
 	const initialRegion = useLocation();
 	const [nextPlace, setNextPlace] = useState(null);
+	let locationSubscription = null;
+
+	useEffect(() => {
+		if (startedHunt && hasLocatePermissions) {
+			startWatching(); // Start watching user's position
+		}
+		//cleanup
+		return () => {
+			if (locationSubscription) {
+				locationSubscription.remove();
+			}
+		};
+	}, [hasLocatePermissions, startedHunt]);
+
+	const startWatching = async () => {
+		locationSubscription = await Location.watchPositionAsync(
+			{
+				accuracy: Location.Accuracy.High,
+				timeInterval: 1000, // milliseconds
+				distanceInterval: 10, // meters
+				mayShowUserSettingsDialog: true, // Prompt the user for background location permission
+			},
+			(location) => {
+				// Handle the updated location data here
+				console.log("New location:", location);
+			}
+		);
+
+		// To stop watching the location, you can call locationSubscription.remove();
+	};
 
 	const pressHandler = async (loc) => {
 		setIsLoading(true);
@@ -40,6 +71,14 @@ export const ActiveHunting = ({ hunt }) => {
 			console.error("Error fetching route:", error);
 			setIsLoading(false);
 		}
+	};
+
+	const stopHandler = () => {
+		console.log("LOCATION", locationSubscription);
+		if (locationSubscription) {
+			locationSubscription.remove();
+		}
+		setStartedHunt(false);
 	};
 
 	if (hasLocatePermissions === undefined) {
@@ -107,13 +146,20 @@ export const ActiveHunting = ({ hunt }) => {
 					)}
 				</MapView>
 			)}
+			<View style={styles.buttonContainer}>
+				<CustomButton
+					title="Stop hunting!"
+					pressHandler={stopHandler}
+					style={styles.button}
+				/>
+			</View>
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
 	mapContainer: {
-		height: "75%",
+		height: "70%",
 		marginBottom: 25,
 	},
 	topContainer: {
@@ -135,5 +181,8 @@ const styles = StyleSheet.create({
 	},
 	whiteText: {
 		color: "#fff",
+	},
+	buttonContainer: {
+		marginHorizontal: 28,
 	},
 });

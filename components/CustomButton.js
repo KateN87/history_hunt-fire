@@ -25,7 +25,6 @@ export default CustomButton = ({ title, pressHandler, disabled }) => {
 const styles = StyleSheet.create({
 	buttonContainer: {
 		marginVertical: 20,
-		marginHorizontal: 28,
 		height: 50,
 		alignItems: "center",
 		justifyContent: "center",
