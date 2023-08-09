@@ -10,7 +10,7 @@ const CustomModal = ({ children, modalVisible, setModalVisible }) => {
 			onRequestClose={() => setModalVisible(false)}
 		>
 			<View style={styles.modalView}>
-				<Pressable onPress={() => setModalVisible(!modalVisible)}>
+				<Pressable onPress={() => setModalVisible(false)}>
 					<Text style={styles.closeText}>X</Text>
 				</Pressable>
 				{children}

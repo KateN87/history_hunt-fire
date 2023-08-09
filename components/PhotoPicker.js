@@ -17,15 +17,20 @@ import { GlobalColors } from "../styles/global";
 //Components
 import IconButton from "./IconButton";
 
-export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
+export const PhotoPicker = ({
+	setImgUrl,
+	bucketname,
+	filename,
+	dontSave,
+	setFinishedLocations,
+	setModalVisible,
+}) => {
 	const storageRef = ref(storage, `${bucketname}/${filename}`);
-
 	const cameraRef = useRef();
 	const [type, setType] = useState(CameraType.back);
 	const [hasCameraPermissions, setHasCameraPermissions] = useState();
 	const [hasMediaLibraryPermissions, setHasMediaLibraryPermissions] =
 		useState();
-
 	const [photo, setPhoto] = useState();
 
 	//To check permissions
@@ -59,10 +64,10 @@ export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 		setPhoto(newPhoto);
 	};
 
-	if (photo) {
-		let savePhoto = async () => {
-			await MediaLibrary.saveToLibraryAsync(photo.uri);
+	let savePhoto = async () => {
+		await MediaLibrary.saveToLibraryAsync(photo.uri);
 
+		if (!dontSave) {
 			// Convert the file URI to base64
 			const response = await fetch(photo.uri);
 			const blob = await response.blob();
@@ -77,18 +82,36 @@ export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 			const image = await getDownloadURL(storageRef);
 
 			setImgUrl(image);
+		} else {
+			setFinishedLocations((prev) => prev + 1);
+		}
+		setPhoto(undefined);
+		setModalVisible(false);
+	};
 
-			setPhoto(undefined);
-		};
-
+	if (photo) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<View style={styles.previewContainer}>
 				<Image style={styles.preview} source={{ uri: photo.uri }} />
-				{hasMediaLibraryPermissions ? (
-					<Button title="Save" onPress={savePhoto} />
-				) : undefined}
-				<Button title="Discard" onPress={() => setPhoto(undefined)} />
-			</SafeAreaView>
+				<View style={styles.buttonContainer}>
+					{hasMediaLibraryPermissions ? (
+						<IconButton
+							type={"MaterialCommunityIcons"}
+							icon="content-save-check-outline"
+							color={GlobalColors.accentYellow}
+							size={82}
+							pressHandler={savePhoto}
+						/>
+					) : undefined}
+					<IconButton
+						type={"MaterialCommunityIcons"}
+						icon="trash-can-outline"
+						color={GlobalColors.accentYellow}
+						size={82}
+						pressHandler={() => setPhoto(undefined)}
+					/>
+				</View>
+			</View>
 		);
 	}
 
@@ -107,7 +130,7 @@ export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 		<Camera style={styles.container} ref={cameraRef} type={type}>
 			<View style={styles.buttonContainer}>
 				<IconButton
-					type={"FontAwesome5"}
+					type={"MaterialCommunityIcons"}
 					icon="camera"
 					color={GlobalColors.accentYellow}
 					size={64}
@@ -128,15 +151,22 @@ export const PhotoPicker = ({ setImgUrl, bucketname, filename }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		aligntItems: "center",
+		alignItems: "center",
 		justifyContent: "flex-end",
+	},
+	previewContainer: {
+		flex: 1,
+		justifyContent: "space-evenly",
+		alignItems: "center",
 	},
 	buttonContainer: {
 		flexDirection: "row",
-		justifyContent: "center",
 	},
 	preview: {
-		alignSelf: "stretch",
-		flex: 1,
+		borderRadius: 300,
+		width: 300,
+		height: 300,
+		borderWidth: 4,
+		borderColor: GlobalColors.hotPink,
 	},
 });

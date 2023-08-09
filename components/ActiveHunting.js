@@ -13,13 +13,16 @@ import usePermission from "../hooks/usePermission";
 import { LinearGradient } from "expo-linear-gradient";
 import CustomButton from "./CustomButton";
 import { LoadingContainer } from "./LoadingContainer";
+import { CustomModal } from "./CustomModal";
+import { PhotoPicker } from "./PhotoPicker";
 
 export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 	const hasLocatePermissions = usePermission();
+	const [finishedLocations, setFinishedLocations] = useState(0);
 	const [coords, setCoords] = useState();
 	const { initialRegion, isPending } = useLocation();
 	const [nextPlace, setNextPlace] = useState(null);
-	const [isFound, setIsFound] = useState(false);
+	const [isFound, setIsFound] = useState(true);
 	const [modalVisible, setModalVisible] = useState(false);
 	let locationSubscription = null;
 
@@ -62,12 +65,17 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 		if (nextPlace) {
 			startWatching();
 		}
+		if (finishedLocations === hunt.pickedLocation.length) {
+			Alert.alert("Finished!", "You´ve found all the lcoations!", [
+				{ text: "YAY!", onPress: () => stopHandler() },
+			]);
+		}
 		return () => {
 			if (locationSubscription) {
 				locationSubscription.remove();
 			}
 		};
-	}, [nextPlace]);
+	}, [nextPlace, finishedLocations]);
 
 	const pressHandler = async (loc) => {
 		try {
@@ -136,14 +144,22 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 						{nextPlace.address}
 					</Text>
 				) : (
-					<Text style={[GlobalStyles.smallTitle, styles.whiteText]}>
-						Pick one of the locations on your map!
-					</Text>
+					<View>
+						<Text
+							style={[GlobalStyles.smallTitle, styles.whiteText]}
+						>
+							Pick one of the locations on your map!
+						</Text>
+						<Text
+							style={[GlobalStyles.smallTitle, styles.whiteText]}
+						>
+							{finishedLocations} / {hunt.pickedLocation.length}
+						</Text>
+					</View>
 				)}
 			</LinearGradient>
 			{isPending && <LoadingContainer />}
-			{/* {isLoading && <LoadingContainer />} */}
-			{!isPending /* && !isLoading */ && (
+			{!isPending && (
 				<MapView
 					style={styles.mapContainer}
 					initialRegion={initialRegion}
@@ -186,13 +202,23 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 					pressHandler={stopHandler}
 				/>
 			</View>
+			<CustomModal
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+			>
+				<PhotoPicker
+					dontSave={true}
+					setFinishedLocations={setFinishedLocations}
+					setModalVisible={setModalVisible}
+				/>
+			</CustomModal>
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
 	mapContainer: {
-		height: "60%",
+		height: "75%",
 		marginBottom: 25,
 	},
 	topContainer: {
@@ -208,6 +234,7 @@ const styles = StyleSheet.create({
 	},
 	whiteText: {
 		color: "#fff",
+		padding: 5,
 	},
 	buttonContainer: {
 		justifyContent: "center",

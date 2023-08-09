@@ -48,7 +48,6 @@ export default ProfileScreen = ({ navigation }) => {
 					photoURL: imgUrl,
 				});
 			};
-
 			updateImage();
 		}
 	});
@@ -82,6 +81,7 @@ export default ProfileScreen = ({ navigation }) => {
 					filename={user.uid}
 					bucketname={"profilephotos"}
 					setImgUrl={setImgUrl}
+					setModalVisible={setModalVisible}
 				/>
 			</CustomModal>
 			<ScrollView showsVerticalScrollIndicator={false}>
@@ -93,6 +93,7 @@ export default ProfileScreen = ({ navigation }) => {
 							"==",
 							auth.currentUser.uid,
 						]}
+						pressHandler={navigateHandler}
 					/>
 				</View>
 				<View>

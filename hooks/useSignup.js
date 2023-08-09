@@ -25,6 +25,7 @@ export const useSignup = () => {
 			await updateProfile(auth.currentUser, {
 				displayName,
 				photoURL: defaultPhotoURL,
+				finishedHunts: [],
 			});
 
 			await setDoc(doc(db, "users", res.user.uid), {
