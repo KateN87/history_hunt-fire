@@ -57,7 +57,7 @@ export default LoginScreen = ({ navigation }) => {
 							</View>
 							<View style={styles.itemContainer}>
 								<Text style={GlobalStyles.smallTitle}>
-									Starting address:
+									Recommended starting address:
 								</Text>
 								<Text style={GlobalStyles.mediumTitle}>
 									{hunt.pickedLocation[0].address}
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "white",
-		/* alignItems: "center", */
+		alignItems: "center",
 	},
 	testContainer: {
 		alignItems: "center",

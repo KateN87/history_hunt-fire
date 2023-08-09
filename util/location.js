@@ -33,7 +33,6 @@ export const getHumanReadableAddress = async ({ latitude, longitude }) => {
 };
 
 export const getRoute = async (startLoc, destinationLoc) => {
-	console.log("START AND DEST", startLoc, destinationLoc);
 	try {
 		const resp = await axios.get(
 			"https://maps.googleapis.com/maps/api/directions/json",
@@ -55,7 +54,6 @@ export const getRoute = async (startLoc, destinationLoc) => {
 				longitude: point[1],
 			};
 		});
-		console.log(resp.data);
 		return coords;
 	} catch (error) {
 		return error;

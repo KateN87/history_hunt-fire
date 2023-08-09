@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
+import { getDistance } from "geolib";
 
 //styles and components
 import IconButton from "../components/IconButton";
@@ -11,48 +12,67 @@ import useLocation from "../hooks/useLocation";
 import usePermission from "../hooks/usePermission";
 import { LinearGradient } from "expo-linear-gradient";
 import CustomButton from "./CustomButton";
+import { LoadingContainer } from "./LoadingContainer";
 
-export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
+export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 	const hasLocatePermissions = usePermission();
 	const [coords, setCoords] = useState();
-	const [isLoading, setIsLoading] = useState(false);
-	const initialRegion = useLocation();
+	const { initialRegion, isPending } = useLocation();
 	const [nextPlace, setNextPlace] = useState(null);
+	const [isFound, setIsFound] = useState(false);
+	const [modalVisible, setModalVisible] = useState(false);
 	let locationSubscription = null;
 
-	useEffect(() => {
-		if (startedHunt && hasLocatePermissions) {
-			startWatching(); // Start watching user's position
+	const startWatching = async () => {
+		if (locationSubscription) {
+			locationSubscription.remove();
 		}
-		//cleanup
+		locationSubscription = await Location.watchPositionAsync(
+			{
+				accuracy: Location.Accuracy.BestForNavigation,
+				timeInterval: 1000, // milliseconds
+				distanceInterval: 10, // meters
+				mayShowUserSettingsDialog: true,
+			},
+			async (location) => {
+				const { latitude: currentLat, longitude: currentLong } =
+					location.coords;
+				const { latitude: destLat, longitude: destLong } =
+					nextPlace.destinationLoc;
+
+				const distance = getDistance(
+					{
+						latitude: currentLat,
+						longitude: currentLong,
+					},
+					{
+						latitude: destLat,
+						longitude: destLong,
+					}
+				);
+				if (distance <= 20) {
+					setIsFound(true);
+					locationSubscription.remove();
+				}
+			}
+		);
+	};
+
+	useEffect(() => {
+		if (nextPlace) {
+			startWatching();
+		}
 		return () => {
 			if (locationSubscription) {
 				locationSubscription.remove();
 			}
 		};
-	}, [hasLocatePermissions, startedHunt]);
-
-	const startWatching = async () => {
-		locationSubscription = await Location.watchPositionAsync(
-			{
-				accuracy: Location.Accuracy.High,
-				timeInterval: 1000, // milliseconds
-				distanceInterval: 10, // meters
-				mayShowUserSettingsDialog: true, // Prompt the user for background location permission
-			},
-			(location) => {
-				// Handle the updated location data here
-				console.log("New location:", location);
-			}
-		);
-
-		// To stop watching the location, you can call locationSubscription.remove();
-	};
+	}, [nextPlace]);
 
 	const pressHandler = async (loc) => {
-		setIsLoading(true);
 		try {
 			const location = await Location.getCurrentPositionAsync();
+
 			const startLoc = {
 				latitude: location.coords.latitude,
 				longitude: location.coords.longitude,
@@ -65,20 +85,28 @@ export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
 
 			const getCoords = await getRoute(startLoc, destinationLoc);
 			setCoords(getCoords);
-			setNextPlace(loc.address);
-			setIsLoading(false);
+			setNextPlace({ address: loc.address, destinationLoc });
 		} catch (error) {
 			console.error("Error fetching route:", error);
-			setIsLoading(false);
 		}
 	};
 
 	const stopHandler = () => {
-		console.log("LOCATION", locationSubscription);
 		if (locationSubscription) {
 			locationSubscription.remove();
 		}
+		setNextPlace(null);
 		setStartedHunt(false);
+	};
+
+	const foundHandler = () => {
+		if (!isFound) {
+			return Alert.alert(
+				"Not there yet!",
+				"Keep looking for the place on the map"
+			);
+		}
+		setModalVisible(true);
 	};
 
 	if (hasLocatePermissions === undefined) {
@@ -94,11 +122,6 @@ export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
 
 	return (
 		<View>
-			{isLoading && (
-				<View style={styles.loadingContainer}>
-					<Text>Loading...</Text>
-				</View>
-			)}
 			<LinearGradient
 				colors={[GlobalColors.hotPurple, GlobalColors.hotPink]}
 				style={styles.topContainer}
@@ -110,7 +133,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
 				</Text>
 				{nextPlace ? (
 					<Text style={[GlobalStyles.smallTitle, styles.whiteText]}>
-						{nextPlace}
+						{nextPlace.address}
 					</Text>
 				) : (
 					<Text style={[GlobalStyles.smallTitle, styles.whiteText]}>
@@ -118,8 +141,9 @@ export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
 					</Text>
 				)}
 			</LinearGradient>
-
-			{initialRegion && (
+			{isPending && <LoadingContainer />}
+			{/* {isLoading && <LoadingContainer />} */}
+			{!isPending /* && !isLoading */ && (
 				<MapView
 					style={styles.mapContainer}
 					initialRegion={initialRegion}
@@ -147,10 +171,19 @@ export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
 				</MapView>
 			)}
 			<View style={styles.buttonContainer}>
-				<CustomButton
-					title="Stop hunting!"
+				<IconButton
+					type={"MaterialCommunityIcons"}
+					icon={isFound ? "camera" : "camera-off"}
+					color={GlobalColors.accentYellow}
+					size={40}
+					pressHandler={foundHandler}
+				/>
+				<IconButton
+					type={"MaterialCommunityIcons"}
+					icon="cancel"
+					color={GlobalColors.accentYellow}
+					size={40}
 					pressHandler={stopHandler}
-					style={styles.button}
 				/>
 			</View>
 		</View>
@@ -159,7 +192,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt, startedHunt }) => {
 
 const styles = StyleSheet.create({
 	mapContainer: {
-		height: "70%",
+		height: "60%",
 		marginBottom: 25,
 	},
 	topContainer: {
@@ -170,12 +203,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	loadingContainer: {
-		...StyleSheet.absoluteFillObject,
-		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: "rgba(255, 255, 255, 0.7)",
-	},
 	yellowText: {
 		color: GlobalColors.accentYellow,
 	},
@@ -183,6 +210,7 @@ const styles = StyleSheet.create({
 		color: "#fff",
 	},
 	buttonContainer: {
-		marginHorizontal: 28,
+		justifyContent: "center",
+		flexDirection: "row",
 	},
 });

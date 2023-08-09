@@ -7,7 +7,6 @@ import {
 	Pressable,
 	ScrollView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 
 //ctx & hooks
 import { AuthContext } from "../context/AuthContext";
@@ -117,8 +116,9 @@ export default ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		marginVertical: 60,
-		marginHorizontal: 20,
+		paddingVertical: 40,
+		paddingHorizontal: 20,
+		backgroundColor: "white",
 	},
 	imageNameContainer: {
 		alignItems: "center",

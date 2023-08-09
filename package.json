@@ -25,6 +25,7 @@
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
     "firebase": "^10.1.0",
+    "geolib": "^3.3.4",
     "polyline": "^0.2.0",
     "react": "18.2.0",
     "react-hook-form": "^7.44.1",
