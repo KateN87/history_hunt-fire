@@ -3,26 +3,28 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { getDistance } from "geolib";
-
-//styles and components
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+//hooks and components
 import IconButton from "../components/IconButton";
-import { GlobalColors, GlobalStyles } from "../styles/global";
 import { getRoute } from "../util/location";
 import useLocation from "../hooks/useLocation";
 import usePermission from "../hooks/usePermission";
-import { LinearGradient } from "expo-linear-gradient";
-import CustomButton from "./CustomButton";
 import { LoadingContainer } from "./LoadingContainer";
 import { CustomModal } from "./CustomModal";
 import { PhotoPicker } from "./PhotoPicker";
+//Styles
+import { GlobalColors, GlobalStyles } from "../styles/global";
 
 export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 	const hasLocatePermissions = usePermission();
-	const [finishedLocations, setFinishedLocations] = useState(0);
+	const finishedLocations = hunt.pickedLocation.filter(
+		(place) => place.finished
+	).length;
 	const [coords, setCoords] = useState();
 	const { initialRegion, isPending } = useLocation();
 	const [nextPlace, setNextPlace] = useState(null);
-	const [isFound, setIsFound] = useState(true);
+	const [isFound, setIsFound] = useState(true); //CHANGE TO FALSE IF CHECKING FOR LOCATION
 	const [modalVisible, setModalVisible] = useState(false);
 	let locationSubscription = null;
 
@@ -61,12 +63,21 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 		);
 	};
 
+	const updateFinishedLoc = (index) => {
+		const updatedLocation = [...hunt.pickedLocation];
+		updatedLocation[index].finished = true;
+	};
+
 	useEffect(() => {
 		if (nextPlace) {
 			startWatching();
 		}
-		if (finishedLocations === hunt.pickedLocation.length) {
-			Alert.alert("Finished!", "You´ve found all the lcoations!", [
+		//check if all locations are found
+		const allLocationsFound = hunt.pickedLocation.every(
+			(place) => place.finished
+		);
+		if (allLocationsFound) {
+			Alert.alert("Finished!", "You've found all the locations!", [
 				{ text: "YAY!", onPress: () => stopHandler() },
 			]);
 		}
@@ -75,9 +86,9 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 				locationSubscription.remove();
 			}
 		};
-	}, [nextPlace, finishedLocations]);
+	}, [nextPlace, hunt.pickedLocation, updateFinishedLoc]);
 
-	const pressHandler = async (loc) => {
+	const pressHandler = async (place, index) => {
 		try {
 			const location = await Location.getCurrentPositionAsync();
 
@@ -87,13 +98,13 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 			};
 
 			const destinationLoc = {
-				latitude: loc.latitude,
-				longitude: loc.longitude,
+				latitude: place.latitude,
+				longitude: place.longitude,
 			};
 
 			const getCoords = await getRoute(startLoc, destinationLoc);
 			setCoords(getCoords);
-			setNextPlace({ address: loc.address, destinationLoc });
+			setNextPlace({ address: place.address, destinationLoc, index });
 		} catch (error) {
 			console.error("Error fetching route:", error);
 		}
@@ -103,12 +114,13 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 		if (locationSubscription) {
 			locationSubscription.remove();
 		}
-		setNextPlace(null);
+		/* setNextPlace(null); */
 		setStartedHunt(false);
 	};
 
 	const foundHandler = () => {
 		if (!isFound) {
+			//ONLY WORKING IF USING GPS location IRL
 			return Alert.alert(
 				"Not there yet!",
 				"Keep looking for the place on the map"
@@ -144,19 +156,13 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 						{nextPlace.address}
 					</Text>
 				) : (
-					<View>
-						<Text
-							style={[GlobalStyles.smallTitle, styles.whiteText]}
-						>
-							Pick one of the locations on your map!
-						</Text>
-						<Text
-							style={[GlobalStyles.smallTitle, styles.whiteText]}
-						>
-							{finishedLocations} / {hunt.pickedLocation.length}
-						</Text>
-					</View>
+					<Text style={[GlobalStyles.smallTitle, styles.whiteText]}>
+						Pick one of the locations on your map!
+					</Text>
 				)}
+				<Text style={[GlobalStyles.smallTitle, styles.whiteText]}>
+					{finishedLocations} / {hunt.pickedLocation.length}
+				</Text>
 			</LinearGradient>
 			{isPending && <LoadingContainer />}
 			{!isPending && (
@@ -166,16 +172,31 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 					showsUserLocation={true}
 					followsUserLocation={true}
 				>
-					{hunt.pickedLocation.map((loc, index) => (
+					{hunt.pickedLocation.map((place, index) => (
 						<Marker
 							key={index}
 							coordinate={{
-								latitude: loc.latitude,
-								longitude: loc.longitude,
+								latitude: place.latitude,
+								longitude: place.longitude,
 							}}
-							pinColor={GlobalColors.hotPink}
-							onPress={() => pressHandler(loc)}
-						/>
+							/* pinColor={GlobalColors.hotPink} */
+							onPress={() => pressHandler(place, index)}
+						>
+							{place.finished && (
+								<MaterialCommunityIcons
+									name="map-marker-check"
+									size={42}
+									color={GlobalColors.hotPink}
+								/>
+							)}
+							{!place.finished && (
+								<MaterialCommunityIcons
+									name="map-marker"
+									size={42}
+									color={GlobalColors.hotPink}
+								/>
+							)}
+						</Marker>
 					))}
 					{coords && (
 						<Polyline
@@ -191,40 +212,44 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 					type={"MaterialCommunityIcons"}
 					icon={isFound ? "camera" : "camera-off"}
 					color={GlobalColors.accentYellow}
-					size={40}
+					size={72}
 					pressHandler={foundHandler}
 				/>
 				<IconButton
 					type={"MaterialCommunityIcons"}
 					icon="cancel"
 					color={GlobalColors.accentYellow}
-					size={40}
+					size={72}
 					pressHandler={stopHandler}
 				/>
 			</View>
-			<CustomModal
-				modalVisible={modalVisible}
-				setModalVisible={setModalVisible}
-			>
-				<PhotoPicker
-					dontSave={true}
-					setFinishedLocations={setFinishedLocations}
+			{nextPlace && (
+				<CustomModal
+					modalVisible={modalVisible}
 					setModalVisible={setModalVisible}
-				/>
-			</CustomModal>
+				>
+					<PhotoPicker
+						dontSave={true}
+						setModalVisible={setModalVisible}
+						updateFinishedLoc={() =>
+							updateFinishedLoc(nextPlace.index)
+						}
+					/>
+				</CustomModal>
+			)}
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
 	mapContainer: {
-		height: "75%",
+		height: "70%",
 		marginBottom: 25,
 	},
 	topContainer: {
 		flex: 1,
 		marginTop: 50,
-		minHeight: 130,
+		minHeight: 150,
 		maxHeight: 150,
 		justifyContent: "center",
 		alignItems: "center",

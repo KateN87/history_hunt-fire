@@ -17,7 +17,6 @@ const useLocation = () => {
 			});
 		};
 		getLocation();
-		console.log("INITIAL", initialRegion);
 		setIsPending(false);
 	}, []);
 

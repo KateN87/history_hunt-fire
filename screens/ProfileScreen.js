@@ -7,21 +7,17 @@ import {
 	Pressable,
 	ScrollView,
 } from "react-native";
-
 //ctx & hooks
 import { AuthContext } from "../context/AuthContext";
 import { useLogout } from "../hooks/useLogout";
-
 //components
 import CustomButton from "../components/CustomButton";
 import { PhotoPicker } from "../components/PhotoPicker";
 import IconButton from "../components/IconButton";
 import { HuntsContainer } from "../components/HuntsContainer";
 import { CustomModal } from "../components/CustomModal";
-
 //styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
-
 //firebase
 import { updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase/config";

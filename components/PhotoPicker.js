@@ -1,11 +1,4 @@
-import {
-	View,
-	Button,
-	Image,
-	SafeAreaView,
-	StyleSheet,
-	Text,
-} from "react-native";
+import { View, Image, StyleSheet, Text } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
@@ -22,8 +15,8 @@ export const PhotoPicker = ({
 	bucketname,
 	filename,
 	dontSave,
-	setFinishedLocations,
 	setModalVisible,
+	updateFinishedLoc,
 }) => {
 	const storageRef = ref(storage, `${bucketname}/${filename}`);
 	const cameraRef = useRef();
@@ -54,7 +47,7 @@ export const PhotoPicker = ({
 	};
 
 	const takePic = async () => {
-		let options = {
+		const options = {
 			quality: 1,
 			base64: true,
 			exif: false,
@@ -64,7 +57,7 @@ export const PhotoPicker = ({
 		setPhoto(newPhoto);
 	};
 
-	let savePhoto = async () => {
+	const savePhoto = async () => {
 		await MediaLibrary.saveToLibraryAsync(photo.uri);
 
 		if (!dontSave) {
@@ -83,8 +76,9 @@ export const PhotoPicker = ({
 
 			setImgUrl(image);
 		} else {
-			setFinishedLocations((prev) => prev + 1);
+			updateFinishedLoc();
 		}
+
 		setPhoto(undefined);
 		setModalVisible(false);
 	};

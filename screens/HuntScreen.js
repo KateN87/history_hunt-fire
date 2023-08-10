@@ -1,5 +1,4 @@
 import { View, StyleSheet, ScrollView, Text, Image } from "react-native";
-
 //styles
 import { GlobalStyles } from "../styles/global";
 import { useRoute } from "@react-navigation/native";
