@@ -20,7 +20,7 @@ export const CreateScreen = () => {
 	const [error, setError] = useState(null);
 	const [isPending, setIsPending] = useState(false);
 	const [selectedFriends, setSelectedFriends] = useState([]);
-	const [pickedLocation, setPickedLocation] = useState();
+	const [pickedLocations, setPickedLocations] = useState();
 
 	const {
 		control,
@@ -37,7 +37,7 @@ export const CreateScreen = () => {
 	useEffect(() => {
 		if (route.params) {
 			if (route.params.locations) {
-				setPickedLocation(route.params.locations);
+				setPickedLocations(route.params.locations);
 			} else if (route.params.friends) {
 				setSelectedFriends(route.params.friends);
 			}
@@ -52,7 +52,7 @@ export const CreateScreen = () => {
 		setError(null);
 		setIsPending(true);
 		try {
-			if (!pickedLocation) {
+			if (!pickedLocations) {
 				throw new Error("All fields must be filled!");
 			}
 
@@ -61,8 +61,8 @@ export const CreateScreen = () => {
 				title,
 				time,
 				createdBy: auth.currentUser.uid,
-				photoURL: createLocationUrl(pickedLocation),
-				pickedLocation,
+				photoURL: createLocationUrl(pickedLocations),
+				pickedLocations,
 				selectedFriends,
 			});
 
@@ -132,8 +132,8 @@ export const CreateScreen = () => {
 
 					<View style={styles.inputContainer}>
 						<ShowLocComp
-							pickedLocation={pickedLocation}
-							setPickedLocation={setPickedLocation}
+							pickedLocations={pickedLocations}
+							setPickedLocations={setPickedLocations}
 						/>
 					</View>
 					<View style={styles.inputContainer}>

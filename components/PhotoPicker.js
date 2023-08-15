@@ -121,7 +121,7 @@ export const PhotoPicker = ({
 	}
 
 	return (
-		<Camera style={styles.container} ref={cameraRef} type={type}>
+		<Camera style={styles.photoContainer} ref={cameraRef} type={type}>
 			<View style={styles.buttonContainer}>
 				<IconButton
 					type={"MaterialCommunityIcons"}
@@ -143,8 +143,10 @@ export const PhotoPicker = ({
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
+	photoContainer: {
+		height: "80%",
+		marginTop: 50,
+		padding: 10,
 		alignItems: "center",
 		justifyContent: "flex-end",
 	},

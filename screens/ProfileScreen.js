@@ -28,6 +28,7 @@ export default ProfileScreen = ({ navigation }) => {
 	const { logout } = useLogout();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [imgUrl, setImgUrl] = useState();
+	const [imgVersion, setImgVersion] = useState(Date.now());
 
 	const navigateHandler = (screen, props) => {
 		navigation.navigate(screen, props);
@@ -36,6 +37,7 @@ export default ProfileScreen = ({ navigation }) => {
 	useEffect(() => {
 		if (imgUrl) {
 			const updateImage = async () => {
+				setImgVersion(Date.now());
 				await updateProfile(auth.currentUser, {
 					photoURL: imgUrl,
 				});
@@ -46,7 +48,7 @@ export default ProfileScreen = ({ navigation }) => {
 			};
 			updateImage();
 		}
-	});
+	}, [imgUrl]);
 
 	return (
 		<View style={styles.container}>
@@ -66,7 +68,10 @@ export default ProfileScreen = ({ navigation }) => {
 						pressHandler={() => setModalVisible(true)}
 					/>
 				</View>
-				<Image source={{ uri: user.photoURL }} style={styles.image} />
+				<Image
+					source={{ uri: `${user.photoURL}?v=${imgVersion}` }}
+					style={styles.image}
+				/>
 				<Text style={GlobalStyles.largeTitle}>{user.displayName}</Text>
 			</View>
 			<CustomModal

@@ -11,24 +11,24 @@ import usePermission from "../hooks/usePermission";
 import useLocation from "../hooks/useLocation";
 
 export const MapScreen = ({ navigation }) => {
-	const [pickedLocation, setPickedLocation] = useState([]);
+	const [pickedLocations, setPickedLocations] = useState([]);
 	const hasLocatePermissions = usePermission();
 	const initialRegion = useLocation();
 
-	const savePickedLocation = useCallback(async () => {
-		if (!pickedLocation || pickedLocation.length === 0) {
+	const savepickedLocations = useCallback(async () => {
+		if (!pickedLocations || pickedLocations.length === 0) {
 			Alert.alert("No location selected", "You have to pick a location");
 			return;
 		}
 
 		try {
 			navigation.navigate("create", {
-				locations: pickedLocation,
+				locations: pickedLocations,
 			});
 		} catch (error) {
 			console.error("Error fetching addresses:", error);
 		}
-	}, [navigation, pickedLocation]);
+	}, [navigation, pickedLocations]);
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -38,11 +38,11 @@ export const MapScreen = ({ navigation }) => {
 					icon="save"
 					size={38}
 					color={tintColor}
-					pressHandler={savePickedLocation}
+					pressHandler={savepickedLocations}
 				/>
 			),
 		});
-	}, [navigation, savePickedLocation]);
+	}, [navigation, savepickedLocations]);
 
 	const pressHandler = async (e) => {
 		const latitude = e.nativeEvent.coordinate.latitude;
@@ -50,7 +50,7 @@ export const MapScreen = ({ navigation }) => {
 
 		const address = await getHumanReadableAddress({ latitude, longitude });
 		const updatedLocation = { latitude, longitude, address };
-		setPickedLocation((prev) => [...prev, updatedLocation]);
+		setPickedLocations((prev) => [...prev, updatedLocation]);
 	};
 
 	if (hasLocatePermissions === undefined) {
@@ -79,8 +79,8 @@ export const MapScreen = ({ navigation }) => {
 					showsUserLocation={true}
 					followsUserLocation={true}
 				>
-					{pickedLocation.length > 0 &&
-						pickedLocation.map((loc, index) => (
+					{pickedLocations.length > 0 &&
+						pickedLocations.map((loc, index) => (
 							<Marker
 								key={index}
 								coordinate={{
@@ -91,9 +91,9 @@ export const MapScreen = ({ navigation }) => {
 							/>
 						))}
 
-					{pickedLocation.length > 0 && (
+					{pickedLocations.length > 0 && (
 						<Polyline
-							coordinates={pickedLocation.map((loc) => ({
+							coordinates={pickedLocations.map((loc) => ({
 								latitude: loc.latitude,
 								longitude: loc.longitude,
 							}))}
@@ -104,9 +104,9 @@ export const MapScreen = ({ navigation }) => {
 				</MapView>
 			)}
 			<Text style={GlobalStyles.mediumTitle}>Selected addresses:</Text>
-			{pickedLocation.length > 0 && (
+			{pickedLocations.length > 0 && (
 				<ScrollView>
-					{pickedLocation.map((location, idx) => (
+					{pickedLocations.map((location, idx) => (
 						<View key={idx} style={styles.adressContainer}>
 							<Text style={GlobalStyles.smallTitle}>
 								{location.address}

@@ -31,6 +31,8 @@ export const useSignup = () => {
 			await setDoc(doc(db, "users", res.user.uid), {
 				displayName,
 				photoURL: defaultPhotoURL,
+				finishedHunts: [],
+				startedHunts: [],
 			});
 
 			dispatch({ type: "LOGIN", payload: res.user });

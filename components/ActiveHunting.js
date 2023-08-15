@@ -15,10 +15,12 @@ import { CustomModal } from "./CustomModal";
 import { PhotoPicker } from "./PhotoPicker";
 //Styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
+import { doc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../firebase/config";
 
 export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 	const hasLocatePermissions = usePermission();
-	const finishedLocations = hunt.pickedLocation.filter(
+	const finishedLocations = hunt.pickedLocations.filter(
 		(place) => place.finished
 	).length;
 	const [coords, setCoords] = useState();
@@ -64,7 +66,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 	};
 
 	const updateFinishedLoc = (index) => {
-		const updatedLocation = [...hunt.pickedLocation];
+		const updatedLocation = [...hunt.pickedLocations];
 		updatedLocation[index].finished = true;
 	};
 
@@ -73,20 +75,28 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 			startWatching();
 		}
 		//check if all locations are found
-		const allLocationsFound = hunt.pickedLocation.every(
+		const allLocationsFound = hunt.pickedLocations.every(
 			(place) => place.finished
 		);
 		if (allLocationsFound) {
 			Alert.alert("Finished!", "You've found all the locations!", [
 				{ text: "YAY!", onPress: () => stopHandler() },
 			]);
+			const updateUser = async () => {
+				const docRef = doc(db, "users", auth.currentUser.uid);
+				await updateDoc(docRef, {
+					finishedHunts: [...finishedHunts, hunt.id],
+				});
+			};
+			updateUser();
 		}
+
 		return () => {
 			if (locationSubscription) {
 				locationSubscription.remove();
 			}
 		};
-	}, [nextPlace, hunt.pickedLocation, updateFinishedLoc]);
+	}, [nextPlace, hunt.pickedLocations, updateFinishedLoc]);
 
 	const pressHandler = async (place, index) => {
 		try {
@@ -161,7 +171,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 					</Text>
 				)}
 				<Text style={[GlobalStyles.smallTitle, styles.whiteText]}>
-					{finishedLocations} / {hunt.pickedLocation.length}
+					{finishedLocations} / {hunt.pickedLocations.length}
 				</Text>
 			</LinearGradient>
 			{isPending && <LoadingContainer />}
@@ -172,7 +182,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 					showsUserLocation={true}
 					followsUserLocation={true}
 				>
-					{hunt.pickedLocation.map((place, index) => (
+					{hunt.pickedLocations.map((place, index) => (
 						<Marker
 							key={index}
 							coordinate={{

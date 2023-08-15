@@ -6,7 +6,7 @@ import { createLocationUrl } from "../util/location";
 //Styles
 import { GlobalStyles } from "../styles/global";
 
-export const ShowLocComp = ({ pickedLocation }) => {
+export const ShowLocComp = ({ pickedLocations }) => {
 	const navigation = useNavigation();
 
 	const pickOnMapHandler = () => {
@@ -19,13 +19,13 @@ export const ShowLocComp = ({ pickedLocation }) => {
 				Where should the hunters go?
 			</Text>
 			<View style={styles.innerContainer}>
-				{pickedLocation && (
+				{pickedLocations && (
 					<Image
-						source={{ uri: createLocationUrl(pickedLocation) }}
+						source={{ uri: createLocationUrl(pickedLocations) }}
 						style={styles.map}
 					/>
 				)}
-				{!pickedLocation && (
+				{!pickedLocations && (
 					<Text style={GlobalStyles.smallTitle}>
 						No picked locations yet
 					</Text>
@@ -33,7 +33,7 @@ export const ShowLocComp = ({ pickedLocation }) => {
 			</View>
 			<View>
 				<CustomButton
-					title={pickedLocation ? "Change locations" : "Pick on map"}
+					title={pickedLocations ? "Change locations" : "Pick on map"}
 					pressHandler={pickOnMapHandler}
 				/>
 			</View>

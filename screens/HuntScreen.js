@@ -59,7 +59,7 @@ export default LoginScreen = ({ navigation }) => {
 									Recommended starting address:
 								</Text>
 								<Text style={GlobalStyles.mediumTitle}>
-									{hunt.pickedLocation[0].address}
+									{hunt.pickedLocations[0].address}
 								</Text>
 							</View>
 						</View>
