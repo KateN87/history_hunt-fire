@@ -12,7 +12,7 @@ export const useSignup = () => {
 	const defaultPhotoURL =
 		"https://firebasestorage.googleapis.com/v0/b/historyhunt-a8c4b.appspot.com/o/profilephotos%2FAnonymousProfilePic.png?alt=media&token=18bd054d-bdcb-4e89-ad20-b53c9e832a25";
 
-	const signup = async (email, password, displayName /* thumbnail */) => {
+	const signup = async (email, password, displayName) => {
 		setError(null);
 		setIsPending(true);
 
@@ -25,14 +25,12 @@ export const useSignup = () => {
 			await updateProfile(auth.currentUser, {
 				displayName,
 				photoURL: defaultPhotoURL,
-				finishedHunts: [],
 			});
 
 			await setDoc(doc(db, "users", res.user.uid), {
 				displayName,
 				photoURL: defaultPhotoURL,
 				finishedHunts: [],
-				startedHunts: [],
 			});
 
 			dispatch({ type: "LOGIN", payload: res.user });

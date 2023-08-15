@@ -1,19 +1,16 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import * as Location from "expo-location";
 
 //styles and components
 import IconButton from "../components/IconButton";
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import { getHumanReadableAddress } from "../util/location";
-import usePermission from "../hooks/usePermission";
 import useLocation from "../hooks/useLocation";
 
 export const MapScreen = ({ navigation }) => {
-	const [pickedLocations, setPickedLocations] = useState([]);
-	const hasLocatePermissions = usePermission();
-	const initialRegion = useLocation();
+	const [pickedLocation, setPickedLocation] = useState([]);
+	const { initialRegion, isPending, hasLocatePermissions } = useLocation();
 
 	const savepickedLocations = useCallback(async () => {
 		if (!pickedLocations || pickedLocations.length === 0) {
@@ -74,6 +71,7 @@ export const MapScreen = ({ navigation }) => {
 			{initialRegion && (
 				<MapView
 					style={styles.container}
+					minZoomLevel={15}
 					initialRegion={initialRegion}
 					onPress={pressHandler}
 					showsUserLocation={true}

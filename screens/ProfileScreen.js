@@ -73,6 +73,12 @@ export default ProfileScreen = ({ navigation }) => {
 					style={styles.image}
 				/>
 				<Text style={GlobalStyles.largeTitle}>{user.displayName}</Text>
+				<View style={styles.innerContainer}>
+					<CustomButton
+						title="Create Hunt"
+						pressHandler={() => navigateHandler("create")}
+					/>
+				</View>
 			</View>
 			<CustomModal
 				modalVisible={modalVisible}
@@ -91,10 +97,11 @@ export default ProfileScreen = ({ navigation }) => {
 						title="Invited Hunts"
 						queryArray={[
 							"selectedFriends",
-							"==",
+							"array-contains",
 							auth.currentUser.uid,
 						]}
 						pressHandler={navigateHandler}
+						showExtra={true}
 					/>
 				</View>
 				<View>
@@ -102,12 +109,18 @@ export default ProfileScreen = ({ navigation }) => {
 						title="My Hunts"
 						queryArray={["createdBy", "==", auth.currentUser.uid]}
 						pressHandler={navigateHandler}
+						showExtra={true}
 					/>
 				</View>
-				<View style={styles.innerContainer}>
-					<CustomButton
-						title="Create Hunt"
-						pressHandler={() => navigateHandler("create")}
+				<View>
+					<HuntsContainer
+						title="Finished Hunts"
+						queryArray={[
+							"finishedHunters",
+							"array-contains",
+							auth.currentUser.uid,
+						]}
+						pressHandler={navigateHandler}
 					/>
 				</View>
 			</ScrollView>
