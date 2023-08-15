@@ -40,7 +40,7 @@ export const getRoute = async (startLoc, destinationLoc) => {
 				params: {
 					origin: `${startLoc.latitude},${startLoc.longitude}`,
 					destination: `${destinationLoc.latitude},${destinationLoc.longitude}`,
-					travelMode: "DRIVING",
+					travelMode: "WALKING",
 					key: GOOGLE_API_KEY,
 				},
 			}

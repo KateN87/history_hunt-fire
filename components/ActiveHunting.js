@@ -15,6 +15,8 @@ import { CustomModal } from "./CustomModal";
 import { PhotoPicker } from "./PhotoPicker";
 //Styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
+import { auth, db } from "../firebase/config";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 	const hasLocatePermissions = usePermission();
@@ -55,12 +57,21 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 						longitude: destLong,
 					}
 				);
-				if (distance <= 20) {
+				if (distance <= 10) {
 					setIsFound(true);
 					locationSubscription.remove();
 				}
 			}
 		);
+	};
+
+	const updateHuntDB = async () => {
+		// Create an initial document to update.
+		const docRef = doc(db, "hunts", hunt.id);
+		await updateDoc(docRef, {
+			finishedHunters: arrayUnion(auth.currentUser.uid),
+		});
+		return;
 	};
 
 	const updateFinishedLoc = (index) => {
@@ -76,7 +87,9 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 		const allLocationsFound = hunt.pickedLocation.every(
 			(place) => place.finished
 		);
+
 		if (allLocationsFound) {
+			updateHuntDB();
 			Alert.alert("Finished!", "You've found all the locations!", [
 				{ text: "YAY!", onPress: () => stopHandler() },
 			]);
@@ -168,6 +181,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 			{!isPending && (
 				<MapView
 					style={styles.mapContainer}
+					minZoomLevel={15}
 					initialRegion={initialRegion}
 					showsUserLocation={true}
 					followsUserLocation={true}

@@ -4,80 +4,102 @@ import { GlobalColors, GlobalStyles } from "../styles/global";
 import { AvatarList } from "./AvatarList";
 import { useCollection } from "../hooks/useCollection";
 
-export const HuntsContainer = ({ title, queryArray, pressHandler }) => {
+export const HuntsContainer = ({
+	title,
+	queryArray,
+	pressHandler,
+	showExtra,
+}) => {
 	const { documents: huntsDocs } = useCollection("hunts", queryArray);
 
 	if (!huntsDocs) {
 		return <Text>Loading...</Text>;
 	}
-
 	return (
 		<View style={styles.mainContainer}>
 			<Text style={[GlobalStyles.mediumTitle, styles.pinkText]}>
 				{title}:
 			</Text>
-			{huntsDocs.length > 0 &&
-				huntsDocs.map((hunt) => (
-					<Pressable
-						onPress={() => pressHandler("hunt", { hunt })}
-						key={hunt.id}
-					>
-						<View style={styles.huntContainer}>
-							<View style={styles.titleImageContainer}>
-								<Image
-									source={{ uri: hunt.photoURL }}
-									style={styles.huntImage}
-								/>
-								<Text
-									style={[
-										GlobalStyles.mediumTitle,
-										styles.greyText,
-									]}
-								>
-									{hunt.title}
-								</Text>
-							</View>
-
-							<View style={styles.friendContainer}>
-								{hunt.selectedFriends.length != 0 && (
-									<>
+			<View style={showExtra ? "" : styles.row}>
+				{huntsDocs.length > 0 &&
+					huntsDocs.map((hunt) => (
+						<Pressable
+							onPress={() => pressHandler("hunt", { hunt })}
+							key={hunt.id}
+						>
+							{!showExtra && (
+								<View>
+									<View style={styles.titleImageContainer}>
+										<Image
+											source={{ uri: hunt.photoURL }}
+											style={styles.huntImage}
+										/>
+									</View>
+								</View>
+							)}
+							{showExtra && (
+								<View style={styles.huntContainer}>
+									<View style={styles.titleImageContainer}>
+										<Image
+											source={{ uri: hunt.photoURL }}
+											style={styles.huntImage}
+										/>
 										<Text
 											style={[
-												GlobalStyles.smallTitle,
-												styles.withText,
+												GlobalStyles.mediumTitle,
+												styles.greyText,
 											]}
 										>
-											With:
+											{hunt.title}
 										</Text>
-										<AvatarList
-											selectedFriends={
-												hunt.selectedFriends
-											}
-											imageStyle={styles.avatarImage}
-										/>
-									</>
-								)}
-								{hunt.selectedFriends.length === 0 && (
-									<Text
-										style={[
-											GlobalStyles.smallTitle,
-											styles.withText,
-										]}
-									>
-										Soloing it!
-									</Text>
-								)}
-							</View>
-						</View>
-					</Pressable>
-				))}
-			{!huntsDocs ||
-				(huntsDocs.length === 0 && (
-					<Text style={[GlobalStyles.smallTitle, styles.withText]}>
-						{" "}
-						You have not been invited to any hunts yet
-					</Text>
-				))}
+									</View>
+
+									<View style={styles.friendContainer}>
+										{hunt.selectedFriends.length != 0 && (
+											<>
+												<Text
+													style={[
+														GlobalStyles.smallTitle,
+														styles.withText,
+													]}
+												>
+													With:
+												</Text>
+												<AvatarList
+													selectedFriends={
+														hunt.selectedFriends
+													}
+													imageStyle={
+														styles.avatarImage
+													}
+												/>
+											</>
+										)}
+										{hunt.selectedFriends.length === 0 && (
+											<Text
+												style={[
+													GlobalStyles.smallTitle,
+													styles.withText,
+												]}
+											>
+												Soloing it!
+											</Text>
+										)}
+									</View>
+								</View>
+							)}
+						</Pressable>
+					))}
+				{!huntsDocs ||
+					(huntsDocs.length === 0 && (
+						<Text
+							style={[GlobalStyles.smallTitle, styles.withText]}
+						>
+							{" "}
+							You have not been invited to any hunts yet
+						</Text>
+					))}
+			</View>
 		</View>
 	);
 };
@@ -91,6 +113,9 @@ const styles = StyleSheet.create({
 	},
 	mainContainer: {
 		marginVertical: 15,
+	},
+	row: {
+		flexDirection: "row",
 	},
 	huntContainer: {
 		flex: 1,
