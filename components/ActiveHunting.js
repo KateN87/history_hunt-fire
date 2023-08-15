@@ -19,6 +19,7 @@ import { auth, db } from "../firebase/config";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 export const ActiveHunting = ({ hunt, setStartedHunt }) => {
+	console.log("HUNT", hunt);
 	const hasLocatePermissions = usePermission();
 	const finishedLocations = hunt.pickedLocations.filter(
 		(place) => place.finished
@@ -93,13 +94,6 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 			Alert.alert("Finished!", "You've found all the locations!", [
 				{ text: "YAY!", onPress: () => stopHandler() },
 			]);
-			const updateUser = async () => {
-				const docRef = doc(db, "users", auth.currentUser.uid);
-				await updateDoc(docRef, {
-					finishedHunts: [...finishedHunts, hunt.id],
-				});
-			};
-			updateUser();
 		}
 
 		return () => {

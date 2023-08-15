@@ -16,7 +16,7 @@ export const createLocationUrl = (locations) => {
 		.map(({ latitude, longitude }) => `${latitude},${longitude}`)
 		.join("|");
 
-	return `https://maps.googleapis.com/maps/api/staticmap?center=${locations[0].latitude},${locations[0].longitude}&zoom=14&size=400x400&maptype=roadmap
+	return `https://maps.googleapis.com/maps/api/staticmap?center=${locations[0].latitude},${locations[0].longitude}&zoom=15&size=400x400&maptype=roadmap
       &markers=${markers}&path=color:0x570CBC|weight:5|${path}&key=${GOOGLE_API_KEY}`;
 };
 

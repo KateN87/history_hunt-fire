@@ -28,7 +28,7 @@ export const HuntsContainer = ({
 							key={hunt.id}
 						>
 							{!showExtra && (
-								<View>
+								<View style={styles.column}>
 									<View style={styles.titleImageContainer}>
 										<Image
 											source={{ uri: hunt.photoURL }}
@@ -133,16 +133,16 @@ const styles = StyleSheet.create({
 	},
 	huntImage: {
 		borderRadius: 100,
-		width: 50,
-		height: 50,
-		borderWidth: 2,
+		width: 60,
+		height: 60,
+		borderWidth: 3,
 		borderColor: GlobalColors.hotPink,
 		margin: 10,
 	},
 	avatarImage: {
 		borderRadius: 100,
-		width: 30,
-		height: 30,
+		width: 40,
+		height: 40,
 		borderWidth: 2,
 		borderColor: GlobalColors.hotPink,
 		marginVertical: 10,

@@ -9,7 +9,7 @@ import { getHumanReadableAddress } from "../util/location";
 import useLocation from "../hooks/useLocation";
 
 export const MapScreen = ({ navigation }) => {
-	const [pickedLocation, setPickedLocation] = useState([]);
+	const [pickedLocations, setPickedLocations] = useState([]);
 	const { initialRegion, isPending, hasLocatePermissions } = useLocation();
 
 	const savepickedLocations = useCallback(async () => {

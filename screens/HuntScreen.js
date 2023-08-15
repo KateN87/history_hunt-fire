@@ -5,13 +5,23 @@ import { useRoute } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
 import { useEffect, useState } from "react";
 import { ActiveHunting } from "../components/ActiveHunting";
+import { auth, db } from "../firebase/config";
+import { doc, getDoc } from "firebase/firestore";
 
-export default LoginScreen = ({ navigation }) => {
+export default HuntScreen = ({ navigation }) => {
 	const route = useRoute();
 	const hunt = route.params.hunt;
+	const [finished, setFinished] = useState(false);
 	const [startedHunt, setStartedHunt] = useState(false);
 
 	useEffect(() => {
+		const maybeFinished = hunt.finishedHunters?.includes(
+			auth.currentUser.uid
+		);
+		if (maybeFinished) {
+			setFinished(true);
+		}
+
 		if (startedHunt) {
 			navigation.setOptions({
 				headerShown: false,
@@ -22,11 +32,22 @@ export default LoginScreen = ({ navigation }) => {
 			});
 		}
 	}, [startedHunt]);
+
 	return (
 		<View style={styles.container} key={hunt.id}>
 			{!startedHunt && (
 				<View style={styles.testContainer}>
-					<Text style={GlobalStyles.largeTitle}>Start hunting!</Text>
+					{finished && (
+						<Text style={GlobalStyles.largeTitle}>
+							Hunt finished!
+						</Text>
+					)}
+					{!finished && (
+						<Text style={GlobalStyles.largeTitle}>
+							Start hunting!
+						</Text>
+					)}
+
 					<ScrollView showsVerticalScrollIndicator={false}>
 						<View style={styles.innerContainer}>
 							<View style={styles.itemContainer}>
@@ -63,12 +84,14 @@ export default LoginScreen = ({ navigation }) => {
 								</Text>
 							</View>
 						</View>
-						<View style={styles.itemContainer}>
-							<CustomButton
-								title="Start hunting!"
-								pressHandler={() => setStartedHunt(true)}
-							/>
-						</View>
+						{!finished && (
+							<View style={styles.itemContainer}>
+								<CustomButton
+									title="Start hunting!"
+									pressHandler={() => setStartedHunt(true)}
+								/>
+							</View>
+						)}
 					</ScrollView>
 				</View>
 			)}
@@ -77,7 +100,6 @@ export default LoginScreen = ({ navigation }) => {
 					<ActiveHunting
 						hunt={hunt}
 						setStartedHunt={setStartedHunt}
-						startedHunt={startedHunt}
 					/>
 				</View>
 			)}
