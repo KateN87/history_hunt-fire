@@ -16,10 +16,9 @@ import { PhotoPicker } from "./PhotoPicker";
 //Styles
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import { auth, db } from "../firebase/config";
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 
-export const ActiveHunting = ({ hunt, setStartedHunt }) => {
-	console.log("HUNT", hunt);
+export const ActiveHunting = ({ hunt, setStartedHunt, setFinished }) => {
 	const hasLocatePermissions = usePermission();
 	const finishedLocations = hunt.pickedLocations.filter(
 		(place) => place.finished
@@ -72,6 +71,9 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 		await updateDoc(docRef, {
 			finishedHunters: arrayUnion(auth.currentUser.uid),
 		});
+		await updateDoc(docRef, {
+			selectedFriends: arrayRemove(auth.currentUser.uid),
+		});
 		return;
 	};
 
@@ -90,6 +92,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt }) => {
 		);
 
 		if (allLocationsFound) {
+			setFinished(true);
 			updateHuntDB();
 			Alert.alert("Finished!", "You've found all the locations!", [
 				{ text: "YAY!", onPress: () => stopHandler() },

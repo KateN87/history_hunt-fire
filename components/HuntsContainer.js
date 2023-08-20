@@ -96,7 +96,7 @@ export const HuntsContainer = ({
 							style={[GlobalStyles.smallTitle, styles.withText]}
 						>
 							{" "}
-							You have not been invited to any hunts yet
+							You have no hunts here yet
 						</Text>
 					))}
 			</View>

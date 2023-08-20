@@ -5,8 +5,7 @@ import { useRoute } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
 import { useEffect, useState } from "react";
 import { ActiveHunting } from "../components/ActiveHunting";
-import { auth, db } from "../firebase/config";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../firebase/config";
 
 export default HuntScreen = ({ navigation }) => {
 	const route = useRoute();
@@ -100,6 +99,7 @@ export default HuntScreen = ({ navigation }) => {
 					<ActiveHunting
 						hunt={hunt}
 						setStartedHunt={setStartedHunt}
+						setFinished={setFinished}
 					/>
 				</View>
 			)}
