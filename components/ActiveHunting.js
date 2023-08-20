@@ -26,7 +26,7 @@ export const ActiveHunting = ({ hunt, setStartedHunt, setFinished }) => {
 	const [coords, setCoords] = useState();
 	const { initialRegion, isPending } = useLocation();
 	const [nextPlace, setNextPlace] = useState(null);
-	const [isFound, setIsFound] = useState(true); //CHANGE TO FALSE IF CHECKING FOR LOCATION
+	const [isFound, setIsFound] = useState(true); //CHANGE TO FALSE IF TRACKING LOCATION
 	const [modalVisible, setModalVisible] = useState(false);
 	let locationSubscription = null;
 
