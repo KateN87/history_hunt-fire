@@ -6,7 +6,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { createLocationUrl } from "../util/location";
 import { collection, addDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
-import { AuthContext } from "../context/AuthContext";
 //components
 import { ShowLocComp } from "../components/ShowLocComp";
 import CustomButton from "../components/CustomButton";

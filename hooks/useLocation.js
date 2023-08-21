@@ -20,6 +20,7 @@ const useLocation = () => {
 				});
 			}
 		};
+
 		getLocation();
 		setIsPending(false);
 	}, [hasLocatePermissions]);

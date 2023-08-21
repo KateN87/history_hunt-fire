@@ -7,10 +7,15 @@ import { useCollection } from "../hooks/useCollection";
 export const HuntsContainer = ({
 	title,
 	queryArray,
+	ownHunts,
 	pressHandler,
 	showExtra,
 }) => {
-	const { documents: huntsDocs } = useCollection("hunts", queryArray);
+	const { documents: huntsDocs } = useCollection(
+		"hunts",
+		queryArray,
+		ownHunts
+	);
 
 	if (!huntsDocs) {
 		return <Text>Loading...</Text>;

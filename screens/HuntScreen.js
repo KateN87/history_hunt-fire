@@ -17,10 +17,10 @@ export default HuntScreen = ({ navigation }) => {
 		const maybeFinished = hunt.finishedHunters?.includes(
 			auth.currentUser.uid
 		);
+
 		if (maybeFinished) {
 			setFinished(true);
 		}
-
 		if (startedHunt) {
 			navigation.setOptions({
 				headerShown: false,

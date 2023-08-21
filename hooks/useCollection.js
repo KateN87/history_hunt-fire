@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 //firebase
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 
-export const useCollection = (coll, _q) => {
+export const useCollection = (coll, _q, ownHunts) => {
 	const [documents, setDocuments] = useState(null);
 
 	//set up query without causing infinite loop
@@ -12,7 +12,6 @@ export const useCollection = (coll, _q) => {
 	//real time data collection
 	useEffect(() => {
 		//1st arg: database we want to connect to, 2nd arg: name of the colleciton
-
 		let ref = collection(db, coll);
 
 		//collection(db, coll).where('uid', '==', user.uid)
@@ -26,6 +25,12 @@ export const useCollection = (coll, _q) => {
 			snapshot.docs.forEach((doc) => {
 				results.push({ ...doc.data(), id: doc.id });
 			});
+			if (ownHunts) {
+				results = results.filter(
+					(data) =>
+						!data.finishedHunters?.includes(auth.currentUser.uid)
+				);
+			}
 			setDocuments(results);
 		});
 

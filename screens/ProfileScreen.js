@@ -108,6 +108,7 @@ export default ProfileScreen = ({ navigation }) => {
 					<HuntsContainer
 						title="My Hunts"
 						queryArray={["createdBy", "==", auth.currentUser.uid]}
+						ownHunts={true}
 						pressHandler={navigateHandler}
 						showExtra={true}
 					/>
