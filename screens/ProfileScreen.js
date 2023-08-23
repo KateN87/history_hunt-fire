@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	View,
 	Text,
@@ -7,8 +7,7 @@ import {
 	Pressable,
 	ScrollView,
 } from "react-native";
-//ctx & hooks
-import { AuthContext } from "../context/AuthContext";
+//hooks
 import { useLogout } from "../hooks/useLogout";
 //components
 import CustomButton from "../components/CustomButton";
@@ -24,12 +23,13 @@ import { auth, db } from "../firebase/config";
 import { doc, updateDoc } from "firebase/firestore";
 
 export default ProfileScreen = ({ navigation }) => {
-	const { user } = useContext(AuthContext);
+	const user = auth.currentUser;
 	const { logout } = useLogout();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [imgUrl, setImgUrl] = useState();
 	const [imgVersion, setImgVersion] = useState(Date.now());
 
+	console.log("USER-PHOTO", user.photoURL);
 	const navigateHandler = (screen, props) => {
 		navigation.navigate(screen, props);
 	};
