@@ -29,7 +29,6 @@ export default ProfileScreen = ({ navigation }) => {
 	const [imgUrl, setImgUrl] = useState();
 	const [imgVersion, setImgVersion] = useState(Date.now());
 
-	console.log("USER-PHOTO", user.photoURL);
 	const navigateHandler = (screen, props) => {
 		navigation.navigate(screen, props);
 	};

@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import { AvatarList } from "./AvatarList";
 import { useCollection } from "../hooks/useCollection";
+import { ShowInvitedCreated } from "./ShowInvitedCreated";
 
 export const HuntsContainer = ({
 	title,
@@ -20,6 +21,7 @@ export const HuntsContainer = ({
 	if (!huntsDocs) {
 		return <Text>Loading...</Text>;
 	}
+
 	return (
 		<View style={styles.mainContainer}>
 			<Text style={[GlobalStyles.mediumTitle, styles.pinkText]}>
@@ -60,26 +62,10 @@ export const HuntsContainer = ({
 									</View>
 
 									<View style={styles.friendContainer}>
-										{hunt.selectedFriends.length != 0 && (
-											<>
-												<Text
-													style={[
-														GlobalStyles.smallTitle,
-														styles.withText,
-													]}
-												>
-													With:
-												</Text>
-												<AvatarList
-													selectedFriends={
-														hunt.selectedFriends
-													}
-													imageStyle={
-														styles.avatarImage
-													}
-												/>
-											</>
+										{hunt.selectedFriends.length > 0 && (
+											<ShowInvitedCreated hunt={hunt} />
 										)}
+
 										{hunt.selectedFriends.length === 0 && (
 											<Text
 												style={[

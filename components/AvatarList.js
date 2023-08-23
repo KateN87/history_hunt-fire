@@ -7,6 +7,7 @@ import { auth } from "../firebase/config";
 
 export const AvatarList = ({ selectedFriends, imageStyle }) => {
 	const user = auth.currentUser;
+
 	const { documents: friendList } = useCollection("users", [
 		"__name__",
 		"in",

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, Alert } from "react-native";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 //firebase
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 //styles & components
 import { GlobalColors, GlobalStyles } from "../styles/global";
 import IconButton from "../components/IconButton";
@@ -51,6 +51,7 @@ export const FindFriendsScreen = ({ navigation }) => {
 				const modifiedData = {
 					value: data.displayName,
 					key: doc.id,
+					disabled: doc.id === auth.currentUser.uid ? true : false,
 				};
 				results.push(modifiedData);
 			});
@@ -75,7 +76,9 @@ export const FindFriendsScreen = ({ navigation }) => {
 					label="Added friends"
 					fontFamily="nunito-bold"
 					inputStyles={{ fontSize: 20 }}
+					disabledTextStyles={{ fontSize: 20 }}
 					dropdownTextStyles={{ fontSize: 20 }}
+					disabledInputStyles={{ fontSize: 20 }}
 					notFoundText="No users found :("
 					labelStyles={GlobalStyles.mediumTitle}
 					badgeStyles={styles.badge}
