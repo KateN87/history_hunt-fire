@@ -6,7 +6,7 @@ It allows users create a profile, create hunts involving choosing locations on a
 ## Commands
 
 -   Install dependencies: **npm install**
--   Create a .env file and app your api key as GOOGLE_API_KEY
+-   Create a .env file and add your api key as GOOGLE_API_KEY
 -   Start app: **npm start**
 
 # Important
