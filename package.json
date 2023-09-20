@@ -38,7 +38,8 @@
     "react-native-uuid": "^2.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "react-native-dotenv": "^3.4.9"
   },
   "private": true
 }

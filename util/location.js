@@ -1,6 +1,6 @@
 import axios from "axios";
 import Polyline from "@mapbox/polyline";
-const GOOGLE_API_KEY = "AIzaSyBTP5sWCK8CsfgU-U-65RsewWr0lL1QqFs";
+import { GOOGLE_API_KEY } from "react-native-dotenv";
 
 export const createLocationUrl = (locations) => {
 	const markers = locations
